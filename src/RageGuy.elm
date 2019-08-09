@@ -18,7 +18,7 @@ import Array
 import Dict
 import Html exposing (..)
 import Html.Attributes as A
-import Html.Events exposing (onClick, onMouseDown, onMouseLeave, onMouseUp)
+import Html.Events exposing (onClick)
 
 
 type alias Anger =
@@ -78,7 +78,6 @@ type alias Model =
     , isMoodInTransition : Bool
     , lastRelativeFrame : Int
     , targetAnger : Anger
-    , autoRageUpInProgress : Bool
     }
 
 
@@ -110,7 +109,6 @@ initialModel =
     , isMoodInTransition = False
     , lastRelativeFrame = 0
     , targetAnger = 0
-    , autoRageUpInProgress = False
     }
 
 
@@ -288,7 +286,6 @@ maybeMoodTransitionFrameAfter lastFrame mood =
 
 type Msg
     = Tick
-    | SetAutoRageUp Bool
     | RageUp Float
     | RageUpButDontFFFUUU Float
 
@@ -298,17 +295,10 @@ update msg model =
     case msg of
         Tick ->
             let
-                targetAnger =
-                    if model.autoRageUpInProgress then
-                        min 1.0 (model.targetAnger + 0.01)
-
-                    else
-                        model.targetAnger
-
                 targetMood =
-                    angerToMood targetAnger
+                    angerToMood model.targetAnger
 
-                modelX =
+                newModel =
                     if model.isMoodInTransition then
                         if isMoodBefore model.mood targetMood then
                             case maybeMoodTransitionFrameAfter model.lastRelativeFrame model.mood of
@@ -336,7 +326,7 @@ update msg model =
                     else
                         { model | isMoodInTransition = True }
             in
-            { modelX | targetAnger = targetAnger }
+            newModel
 
         RageUpButDontFFFUUU amount ->
             let
@@ -351,9 +341,6 @@ update msg model =
                     max model.targetAnger (min 1.0 (model.targetAnger + amount))
             in
             { model | targetAnger = targetAnger }
-
-        SetAutoRageUp isAutoRageUP ->
-            { model | autoRageUpInProgress = isAutoRageUP }
 
 
 rageGuyImageWidth : number
@@ -461,11 +448,7 @@ view model =
                 []
     in
     div
-        [ onClick (RageUp 0.01)
-        , onMouseDown (SetAutoRageUp True)
-        , onMouseUp (SetAutoRageUp False)
-        , onMouseLeave (SetAutoRageUp False)
-        , A.style "position" "relative"
+        [ A.style "position" "relative"
         , A.width rageGuyImageWidth
         , A.style "width" (String.fromInt rageGuyImageWidth ++ "px")
         , A.style "height" (String.fromInt height ++ "px")

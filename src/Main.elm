@@ -1,10 +1,10 @@
 module Main exposing (Model, Msg(..), init, initialModel, main, subscriptions, update, updatedModelRage, view)
 
 import Browser
+import Discussion
 import Html exposing (..)
 import Html.Attributes as A
 import Html.Events exposing (onInput)
-import Discussion
 import RageGuy
 import String
 import SwearWords
@@ -131,7 +131,7 @@ update msg model =
                     { model | rageGuy = rageGuy, angerFlash = angerFlash }
 
                 model__ =
-                    if RageGuy.shouldSendMessage model.rageGuy then
+                    if RageGuy.shouldSendMessage rageGuy then
                         let
                             user =
                                 Discussion.User model.name
@@ -150,7 +150,17 @@ update msg model =
             ( model__, Cmd.none )
 
         RageGuyMsg rageGuyMsg ->
-            ( { model | rageGuy = RageGuy.update rageGuyMsg model.rageGuy }
+            let
+                oldAnger =
+                    model.rageGuy.targetAnger
+
+                newRageGuy =
+                    RageGuy.update rageGuyMsg model.rageGuy
+
+                angerDiff =
+                    newRageGuy.targetAnger - oldAnger
+            in
+            ( { model | rageGuy = newRageGuy, angerFlash = (model.angerFlash + angerDiff) * 10.0 }
             , Cmd.none
             )
 
@@ -237,14 +247,14 @@ view model =
                 ++ " (UTC)"
 
         viewMessage message =
-          div [A.class "message"] [
-            b [] [text (message.user.username)],
-            text " ",
-            i [] [text (formatTime message.timestamp)],
-            text " ",
-            b [] [text message.subject],
-            p [] [text message.body]
-          ]
+            div [ A.class "message" ]
+                [ b [] [ text message.user.username ]
+                , text " "
+                , i [] [ text (formatTime message.timestamp) ]
+                , text " "
+                , b [] [ text message.subject ]
+                , p [] [ text message.body ]
+                ]
 
         container html =
             div [ A.class "container" ] html
@@ -254,6 +264,13 @@ view model =
 
         col html =
             div [ A.class "column" ] html
+
+        clickRageGuyMessage =
+            if String.isEmpty model.message then
+                RageGuyMsg (RageGuy.RageUpButDontFFFUUU 0.05)
+
+            else
+                RageGuyMsg (RageGuy.RageUp 0.05)
     in
     section
         [ A.style "background" angerColor
@@ -270,7 +287,7 @@ view model =
                     , br [] []
                     , messageInput
                     ]
-                , col [ rageGuyView ]
+                , div [ A.class "column", Html.Events.onClick clickRageGuyMessage ] [ rageGuyView ]
                 ]
             , hr [] []
             , div [] (List.intersperse (hr [] []) <| List.map viewMessage model.discussion)
