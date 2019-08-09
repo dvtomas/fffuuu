@@ -288,7 +288,7 @@ maybeMoodTransitionFrameAfter lastFrame mood =
 
 type Msg
     = Tick
-    | SetAutoRageUP Bool
+    | SetAutoRageUp Bool
     | RageUp Float
     | RageUpButDontFFFUUU Float
 
@@ -324,8 +324,8 @@ update msg model =
                                     }
 
                         else
+                            -- Should not happen
                             model
-                        -- Should not happen
 
                     else if model.mood == targetMood then
                         { model
@@ -352,7 +352,7 @@ update msg model =
             in
             { model | targetAnger = targetAnger }
 
-        SetAutoRageUP isAutoRageUP ->
+        SetAutoRageUp isAutoRageUP ->
             { model | autoRageUpInProgress = isAutoRageUP }
 
 
@@ -426,7 +426,7 @@ view model =
             Array.fromList [ -1, 2, 3, -2, 0, 2, -3, 1, 2, 1, 2, 1, 0, -1, -2, 2, 1, 0, 1, -3, 1, -2 ]
 
         randomShift n =
-            Maybe.withDefault 0 (Array.get (modBy (n + model.clock) (Array.length randomShifts)) randomShifts)
+            Maybe.withDefault 0 (Array.get (modBy (Array.length randomShifts) (n + model.clock)) randomShifts)
 
         letterDiv xIndex yIndex letter =
             let
@@ -462,9 +462,9 @@ view model =
     in
     div
         [ onClick (RageUp 0.01)
-        , onMouseDown (SetAutoRageUP True)
-        , onMouseUp (SetAutoRageUP False)
-        , onMouseLeave (SetAutoRageUP False)
+        , onMouseDown (SetAutoRageUp True)
+        , onMouseUp (SetAutoRageUp False)
+        , onMouseLeave (SetAutoRageUp False)
         , A.style "position" "relative"
         , A.width rageGuyImageWidth
         , A.style "width" (String.fromInt rageGuyImageWidth ++ "px")

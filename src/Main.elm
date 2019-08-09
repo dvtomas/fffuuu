@@ -4,7 +4,7 @@ import Browser
 import Html exposing (..)
 import Html.Attributes as A
 import Html.Events exposing (onInput)
-import Message
+import Discussion
 import RageGuy
 import String
 import SwearWords
@@ -32,7 +32,7 @@ type alias Model =
     , message : String
     , angerFlash : Float
     , rageGuy : RageGuy.Model
-    , discussion : List Message.Model
+    , discussion : List Discussion.Message
     , time : Time.Posix
     }
 
@@ -134,10 +134,10 @@ update msg model =
                     if RageGuy.shouldSendMessage model.rageGuy then
                         let
                             user =
-                                Message.User model.name
+                                Discussion.User model.name
 
                             newMessage =
-                                Message.Model user time model.subject model.message
+                                Discussion.Message user time model.subject model.message
 
                             newDiscussion =
                                 newMessage :: model.discussion
@@ -175,74 +175,105 @@ update msg model =
 view : Model -> Html Msg
 view model =
     let
-        rageGuyView =
-            Html.map RageGuyMsg (RageGuy.view model.rageGuy)
-
-        borderedStyle =
-            A.class "bordered"
-
-        inputStyle =
-            A.class "input"
-
         ratioTo255 ratio =
             round (Basics.max 0 (Basics.min (ratio * 255) 255))
 
         angerColor =
             Utils.colorToHex
                 (Utils.rgb
-                    (ratioTo255 model.angerFlash)
-                    (ratioTo255 (model.angerFlash - 1.0))
-                    (ratioTo255 (model.angerFlash - 1.0))
+                    255
+                    (ratioTo255 (0.98 - model.angerFlash))
+                    (ratioTo255 (0.97 - model.angerFlash))
                 )
+
+        fffuuuHeader =
+            header [ A.class "bordered" ]
+                [ h1
+                    [ A.class "top-label" ]
+                    [ text "Frustrated? Hatin' it? Roaring Rage?", hr [] [] ]
+                ]
+
+        userNameInput =
+            input
+                [ A.type_ "Text"
+                , A.placeholder "Your  name"
+                , A.value model.name
+                , onInput UserUpdate
+                ]
+                []
+
+        subjectInput =
+            input
+                [ A.type_ "Text"
+                , A.placeholder "Topic"
+                , A.value model.subject
+                , onInput SubjectUpdate
+                ]
+                []
+
+        messageInput =
+            textarea
+                [ A.style "height" "200"
+                , A.placeholder "Enter your hate message. The more you swear the angrier Rage guy becomes! Click him to bully him even more, make him rage to have your message posted!"
+                , A.value model.message
+                , onInput MessageUpdate
+                ]
+                []
+
+        rageGuyView =
+            div
+                [ A.style "width" (String.fromInt RageGuy.rageGuyImageWidth ++ "px")
+                , A.class "derp"
+                ]
+                [ Html.map RageGuyMsg (RageGuy.view model.rageGuy) ]
+
+        formatTime : Time.Posix -> String
+        formatTime time =
+            String.fromInt (Time.toHour Time.utc time)
+                ++ ":"
+                ++ String.fromInt (Time.toMinute Time.utc time)
+                ++ ":"
+                ++ String.fromInt (Time.toSecond Time.utc time)
+                ++ " (UTC)"
+
+        viewMessage message =
+          div [A.class "message"] [
+            b [] [text (message.user.username)],
+            text " ",
+            i [] [text (formatTime message.timestamp)],
+            text " ",
+            b [] [text message.subject],
+            p [] [text message.body]
+          ]
+
+        container html =
+            div [ A.class "container" ] html
+
+        row html =
+            div [ A.class "row" ] html
+
+        col html =
+            div [ A.class "column" ] html
     in
     section
         [ A.style "background" angerColor
         , A.style "color" "#FFD0D0"
         , A.style "font-size" "20px"
-        , A.style "margin" "1em 1.6em"
         ]
-        [ header [ borderedStyle ]
-            [ h1
-                [ A.class "top-label" ]
-                [ text "Frustrated? Hatin' it? Roaring Rage?" ]
-            ]
-        , article []
-            [ p [] []
-            , div []
-                [ input
-                    [ inputStyle
-                    , A.placeholder "User"
-                    , A.value model.name
-                    , onInput UserUpdate
+        [ fffuuuHeader
+        , container
+            [ row
+                [ col
+                    [ userNameInput
+                    , br [] []
+                    , subjectInput
+                    , br [] []
+                    , messageInput
                     ]
-                    []
-                , br [] []
-                , input
-                    [ inputStyle
-                    , A.placeholder "Topic"
-                    , A.value model.subject
-                    , onInput SubjectUpdate
-                    ]
-                    []
-                , br [] []
-                , textarea
-                    [ inputStyle
-                    , A.style "height" "360px"
-                    , A.placeholder "Enter your hatebook message and hold Derp image to post it. The more you swear the more angry he becomes!"
-                    , A.value model.message
-                    , onInput MessageUpdate
-                    ]
-                    []
-                , div
-                    [ A.style "width" (String.fromInt RageGuy.rageGuyImageWidth ++ "px")
-                    , A.style "margin" "0 auto"
-                    ]
-                    [ rageGuyView ]
-                , hr [] []
+                , col [ rageGuyView ]
                 ]
-            , article []
-                [ div [] (List.intersperse (hr [] []) <| List.map Message.view model.discussion)
-                ]
+            , hr [] []
+            , div [] (List.intersperse (hr [] []) <| List.map viewMessage model.discussion)
             ]
         ]
 

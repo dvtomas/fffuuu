@@ -11,6 +11,6 @@ elm make --optimize src/Main.elm --output=docs/main.js
 echo "* Running sass to build milligram.css"
 SASSAPP=./dart-sass/sass
 [ -e $SASSAPP ] || echo $SASSAPP not installed, not building milligram.css
-[ -e $SASSAPP ] && $SASSAPP ./milligram/src/milligram.sass >./docs/fffuuu.css
+[ -e $SASSAPP ] && $SASSAPP ./milligram/src/milligram.sass >./docs/css/fffuuu.css
 
 echo "* Done."

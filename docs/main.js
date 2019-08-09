@@ -519,11 +519,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.ai.R === region.ao.R)
+	if (region.ah.Q === region.am.Q)
 	{
-		return 'on line ' + region.ai.R;
+		return 'on line ' + region.ah.Q;
 	}
-	return 'on lines ' + region.ai.R + ' through ' + region.ao.R;
+	return 'on lines ' + region.ah.Q + ' through ' + region.am.Q;
 }
 
 
@@ -1857,9 +1857,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aX,
-		impl.a5,
+		impl.aT,
 		impl.a3,
+		impl.a0,
 		function() { return function() {} }
 	);
 });
@@ -2743,8 +2743,8 @@ var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
 		G: func(record.G),
-		aj: record.aj,
-		af: record.af
+		ai: record.ai,
+		ae: record.ae
 	}
 });
 
@@ -3013,10 +3013,10 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 
 		var value = result.a;
 		var message = !tag ? value : tag < 3 ? value.a : value.G;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.aj;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.ai;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value.af) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.ae) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -3962,9 +3962,9 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aX,
-		impl.a5,
+		impl.aT,
 		impl.a3,
+		impl.a0,
 		function(sendToApp, initialModel) {
 			var view = impl.a7;
 			/**/
@@ -3998,11 +3998,11 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aX,
-		impl.a5,
+		impl.aT,
 		impl.a3,
+		impl.a0,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.T && impl.T(sendToApp)
+			var divertHrefToApp = impl.S && impl.S(sendToApp)
 			var view = impl.a7;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
@@ -4011,12 +4011,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.al);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.aM);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.a4) && (_VirtualDom_doc.title = title = doc.a4);
+				(title !== doc.a2) && (_VirtualDom_doc.title = title = doc.a2);
 			});
 		}
 	);
@@ -4067,12 +4067,12 @@ function _Browser_makeAnimator(model, draw)
 
 function _Browser_application(impl)
 {
-	var onUrlChange = impl.aY;
-	var onUrlRequest = impl.aZ;
+	var onUrlChange = impl.aU;
+	var onUrlRequest = impl.aV;
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		T: function(sendToApp)
+		S: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4088,9 +4088,9 @@ function _Browser_application(impl)
 					var next = elm$url$Url$fromString(href).a;
 					sendToApp(onUrlRequest(
 						(next
-							&& curr.aA === next.aA
-							&& curr.ar === next.ar
-							&& curr.ax.a === next.ax.a
+							&& curr.ay === next.ay
+							&& curr.ap === next.ap
+							&& curr.av.a === next.av.a
 						)
 							? elm$browser$Browser$Internal(next)
 							: elm$browser$Browser$External(href)
@@ -4098,13 +4098,13 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		aX: function(flags)
+		aT: function(flags)
 		{
-			return A3(impl.aX, flags, _Browser_getUrl(), key);
+			return A3(impl.aT, flags, _Browser_getUrl(), key);
 		},
 		a7: impl.a7,
-		a5: impl.a5,
-		a3: impl.a3
+		a3: impl.a3,
+		a0: impl.a0
 	});
 }
 
@@ -4170,17 +4170,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { aV: 'hidden', O: 'visibilitychange' }
+		? { aR: 'hidden', N: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { aV: 'mozHidden', O: 'mozvisibilitychange' }
+		? { aR: 'mozHidden', N: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { aV: 'msHidden', O: 'msvisibilitychange' }
+		? { aR: 'msHidden', N: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { aV: 'webkitHidden', O: 'webkitvisibilitychange' }
-		: { aV: 'hidden', O: 'visibilitychange' };
+		? { aR: 'webkitHidden', N: 'webkitvisibilitychange' }
+		: { aR: 'hidden', N: 'visibilitychange' };
 }
 
 
@@ -4261,11 +4261,11 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		aG: _Browser_getScene(),
-		aO: {
-			Z: _Browser_window.pageXOffset,
-			_: _Browser_window.pageYOffset,
-			M: _Browser_doc.documentElement.clientWidth,
+		aE: _Browser_getScene(),
+		aJ: {
+			Y: _Browser_window.pageXOffset,
+			Z: _Browser_window.pageYOffset,
+			L: _Browser_doc.documentElement.clientWidth,
 			F: _Browser_doc.documentElement.clientHeight
 		}
 	};
@@ -4276,7 +4276,7 @@ function _Browser_getScene()
 	var body = _Browser_doc.body;
 	var elem = _Browser_doc.documentElement;
 	return {
-		M: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+		L: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
 		F: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
@@ -4300,14 +4300,14 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			aG: {
-				M: node.scrollWidth,
+			aE: {
+				L: node.scrollWidth,
 				F: node.scrollHeight
 			},
-			aO: {
-				Z: node.scrollLeft,
-				_: node.scrollTop,
-				M: node.clientWidth,
+			aJ: {
+				Y: node.scrollLeft,
+				Z: node.scrollTop,
+				L: node.clientWidth,
 				F: node.clientHeight
 			}
 		};
@@ -4338,17 +4338,17 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			aG: _Browser_getScene(),
-			aO: {
-				Z: x,
-				_: y,
-				M: _Browser_doc.documentElement.clientWidth,
+			aE: _Browser_getScene(),
+			aJ: {
+				Y: x,
+				Z: y,
+				L: _Browser_doc.documentElement.clientWidth,
 				F: _Browser_doc.documentElement.clientHeight
 			},
-			aS: {
-				Z: x + rect.left,
-				_: y + rect.top,
-				M: rect.width,
+			aO: {
+				Y: x + rect.left,
+				Z: y + rect.top,
+				L: rect.width,
 				F: rect.height
 			}
 		};
@@ -4386,7 +4386,7 @@ function _Browser_load(url)
 }
 var author$project$RageGuy$Neutral = 0;
 var elm$core$Basics$False = 1;
-var author$project$RageGuy$initialModel = {Y: false, q: 0, Q: false, z: 0, k: 0, l: 0};
+var author$project$RageGuy$initialModel = {X: false, p: 0, P: false, z: 0, k: 0, l: 0};
 var elm$core$Basics$EQ = 1;
 var elm$core$Basics$LT = 0;
 var elm$core$Elm$JsArray$foldr = _JsArray_foldr;
@@ -4473,13 +4473,13 @@ var elm$core$Basics$identity = function (x) {
 var elm$time$Time$Posix = elm$core$Basics$identity;
 var elm$time$Time$millisToPosix = elm$core$Basics$identity;
 var author$project$Main$initialModel = {
-	p: 0.0,
-	P: _List_Nil,
+	s: 0.0,
+	O: _List_Nil,
 	G: '',
-	S: '',
+	R: '',
 	o: author$project$RageGuy$initialModel,
-	K: '',
-	aK: elm$time$Time$millisToPosix(0)
+	a$: '',
+	aI: elm$time$Time$millisToPosix(0)
 };
 var elm$core$Basics$True = 0;
 var elm$core$Result$isOk = function (result) {
@@ -4892,7 +4892,7 @@ var elm$core$Dict$empty = elm$core$Dict$RBEmpty_elm_builtin;
 var elm$core$Task$succeed = _Scheduler_succeed;
 var elm$time$Time$State = F2(
 	function (taggers, processes) {
-		return {az: processes, aJ: taggers};
+		return {ax: processes, aH: taggers};
 	});
 var elm$time$Time$init = elm$core$Task$succeed(
 	A2(elm$time$Time$State, elm$core$Dict$empty, elm$core$Dict$empty));
@@ -5183,7 +5183,7 @@ var elm$time$Time$spawnHelp = F3(
 	});
 var elm$time$Time$onEffects = F3(
 	function (router, subs, _n0) {
-		var processes = _n0.az;
+		var processes = _n0.ax;
 		var rightStep = F3(
 			function (_n6, id, _n7) {
 				var spawns = _n7.a;
@@ -5342,7 +5342,7 @@ var elm$core$Task$sequence = function (tasks) {
 var elm$time$Time$now = _Time_now(elm$time$Time$millisToPosix);
 var elm$time$Time$onSelfMsg = F3(
 	function (router, interval, state) {
-		var _n0 = A2(elm$core$Dict$get, interval, state.aJ);
+		var _n0 = A2(elm$core$Dict$get, interval, state.aH);
 		if (_n0.$ === 1) {
 			return elm$core$Task$succeed(state);
 		} else {
@@ -5390,6 +5390,13 @@ var elm$time$Time$every = F2(
 	});
 var author$project$Main$subscriptions = function (_n0) {
 	return A2(elm$time$Time$every, 100, author$project$Main$Tick);
+};
+var author$project$Discussion$Message = F4(
+	function (user, timestamp, subject, body) {
+		return {aM: body, a$: subject, a1: timestamp, a5: user};
+	});
+var author$project$Discussion$User = function (username) {
+	return {a6: username};
 };
 var author$project$RageGuy$RageUpButDontFFFUUU = function (a) {
 	return {$: 3, a: a};
@@ -5795,10 +5802,10 @@ var author$project$RageGuy$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
 			case 0:
-				var targetAnger = model.Y ? A2(elm$core$Basics$min, 1.0, model.l + 1.0e-2) : model.l;
+				var targetAnger = model.X ? A2(elm$core$Basics$min, 1.0, model.l + 1.0e-2) : model.l;
 				var targetMood = author$project$RageGuy$angerToMood(targetAnger);
 				var modelX = function () {
-					if (model.Q) {
+					if (model.P) {
 						if (A2(author$project$RageGuy$isMoodBefore, model.k, targetMood)) {
 							var _n1 = A2(author$project$RageGuy$maybeMoodTransitionFrameAfter, model.z, model.k);
 							if (!_n1.$) {
@@ -5810,8 +5817,8 @@ var author$project$RageGuy$update = F2(
 								return _Utils_update(
 									model,
 									{
-										q: 0,
-										Q: false,
+										p: 0,
+										P: false,
 										z: 0,
 										k: author$project$RageGuy$nextMood(model.k)
 									});
@@ -5824,13 +5831,13 @@ var author$project$RageGuy$update = F2(
 							return _Utils_update(
 								model,
 								{
-									q: model.q + 1,
-									z: A2(author$project$RageGuy$relativeFrameForStaticMood, model.q, model.k)
+									p: model.p + 1,
+									z: A2(author$project$RageGuy$relativeFrameForStaticMood, model.p, model.k)
 								});
 						} else {
 							return _Utils_update(
 								model,
-								{Q: true});
+								{P: true});
 						}
 					}
 				}();
@@ -5859,7 +5866,7 @@ var author$project$RageGuy$update = F2(
 				var isAutoRageUP = msg.a;
 				return _Utils_update(
 					model,
-					{Y: isAutoRageUP});
+					{X: isAutoRageUP});
 		}
 	});
 var author$project$SwearWords$translationList = _List_fromArray(
@@ -6055,12 +6062,10 @@ var author$project$English$words = _List_fromArray(
 	[
 		_Utils_Tuple2('anal', 0.1),
 		_Utils_Tuple2('anus', 0.1),
-		_Utils_Tuple2('arrse', 0.1),
 		_Utils_Tuple2('arse', 0.1),
 		_Utils_Tuple2('ass', 0.1),
 		_Utils_Tuple2('asses', 0.1),
-		_Utils_Tuple2('assfucker', 0.1),
-		_Utils_Tuple2('assfukka', 0.1),
+		_Utils_Tuple2('assfuck', 0.1),
 		_Utils_Tuple2('asshole', 0.1),
 		_Utils_Tuple2('assholes', 0.1),
 		_Utils_Tuple2('asswhole', 0.1),
@@ -6068,7 +6073,6 @@ var author$project$English$words = _List_fromArray(
 		_Utils_Tuple2('ballsack', 0.1),
 		_Utils_Tuple2('bastard', 0.1),
 		_Utils_Tuple2('beastial', 0.1),
-		_Utils_Tuple2('bestiality', 0.1),
 		_Utils_Tuple2('biatch', 0.1),
 		_Utils_Tuple2('bitch', 0.1),
 		_Utils_Tuple2('bloody', 0.1),
@@ -6094,6 +6098,7 @@ var author$project$English$words = _List_fromArray(
 		_Utils_Tuple2('dammit', 0.1),
 		_Utils_Tuple2('dick', 0.1),
 		_Utils_Tuple2('dickhead', 0.1),
+		_Utils_Tuple2('die', 0.2),
 		_Utils_Tuple2('dildo', 0.1),
 		_Utils_Tuple2('dink', 0.1),
 		_Utils_Tuple2('dyke', 0.1),
@@ -6108,6 +6113,7 @@ var author$project$English$words = _List_fromArray(
 		_Utils_Tuple2('fuckhead', 0.1),
 		_Utils_Tuple2('fuckin', 0.1),
 		_Utils_Tuple2('gangbang', 0.1),
+		_Utils_Tuple2('gay', 0.1),
 		_Utils_Tuple2('gaylord', 0.1),
 		_Utils_Tuple2('gaysex', 0.1),
 		_Utils_Tuple2('goddamn', 0.1),
@@ -6116,6 +6122,7 @@ var author$project$English$words = _List_fromArray(
 		_Utils_Tuple2('hate', 0.1),
 		_Utils_Tuple2('idiot', 0.1),
 		_Utils_Tuple2('jerk', 0.1),
+		_Utils_Tuple2('kill', 0.2),
 		_Utils_Tuple2('mofo', 0.1),
 		_Utils_Tuple2('mothafuck', 0.1),
 		_Utils_Tuple2('motherfuck', 0.1),
@@ -6128,6 +6135,7 @@ var author$project$English$words = _List_fromArray(
 		_Utils_Tuple2('retard', 0.1),
 		_Utils_Tuple2('rimjaw', 0.1),
 		_Utils_Tuple2('rimming', 0.1),
+		_Utils_Tuple2('rimjob', 0.1),
 		_Utils_Tuple2('screw', 0.1),
 		_Utils_Tuple2('shag', 0.1),
 		_Utils_Tuple2('shit', 0.1),
@@ -6231,29 +6239,22 @@ var author$project$Main$updatedModelRage = F5(
 				2.0e-3 * (elm$core$String$length(newString) - elm$core$String$length(oldString)));
 			var severityOfMaybeSwearWordAdded = A2(author$project$SwearWords$severityOfMaybeSwearWordAdded, oldString, newString);
 			var addedSeverity = severityOfMaybeSwearWordAdded + severityOfMaybeCharsAdded;
-			var angerFlash_ = (15 * addedSeverity) + model.p;
+			var angerFlash_ = (15 * addedSeverity) + model.s;
 			var angerFlash__ = (angerFlash_ < 0.5) ? (angerFlash_ + 0.3) : angerFlash_;
 			var rageGuyUpdateMsg = author$project$RageGuy$RageUpButDontFFFUUU(addedSeverity);
 			var rageGuy = A2(author$project$RageGuy$update, rageGuyUpdateMsg, model.o);
 			var model_ = _Utils_update(
 				model,
-				{p: angerFlash__, o: rageGuy});
+				{s: angerFlash__, o: rageGuy});
 			var model__ = A2(stringSetter, newString, model_);
 			return model__;
 		} else {
 			return model;
 		}
 	});
-var author$project$Message$Model = F4(
-	function (user, timestamp, subject, body) {
-		return {al: body, K: subject, aL: timestamp, aM: user};
-	});
-var author$project$Message$User = function (username) {
-	return {aN: username};
-};
 var author$project$RageGuy$Tick = {$: 0};
 var author$project$RageGuy$shouldSendMessage = function (model) {
-	return (model.k === 5) && (model.q === 1);
+	return (model.k === 5) && (model.p === 1);
 };
 var author$project$Main$update = F2(
 	function (msg, model) {
@@ -6263,18 +6264,18 @@ var author$project$Main$update = F2(
 			case 5:
 				var time = msg.a;
 				var rageGuy = A2(author$project$RageGuy$update, author$project$RageGuy$Tick, model.o);
-				var angerFlash = A2(elm$core$Basics$max, 0.0, model.p - 0.2);
+				var angerFlash = A2(elm$core$Basics$max, 0.0, model.s - 0.2);
 				var model_ = _Utils_update(
 					model,
-					{p: angerFlash, o: rageGuy});
+					{s: angerFlash, o: rageGuy});
 				var model__ = function () {
 					if (author$project$RageGuy$shouldSendMessage(model.o)) {
-						var user = author$project$Message$User(model.S);
-						var newMessage = A4(author$project$Message$Model, user, time, model.K, model.G);
-						var newDiscussion = A2(elm$core$List$cons, newMessage, model.P);
+						var user = author$project$Discussion$User(model.R);
+						var newMessage = A4(author$project$Discussion$Message, user, time, model.a$, model.G);
+						var newDiscussion = A2(elm$core$List$cons, newMessage, model.O);
 						return _Utils_update(
 							model_,
-							{P: newDiscussion});
+							{O: newDiscussion});
 					} else {
 						return model_;
 					}
@@ -6315,13 +6316,13 @@ var author$project$Main$update = F2(
 						model,
 						100,
 						function ($) {
-							return $.K;
+							return $.a$;
 						},
 						F2(
 							function (string, m) {
 								return _Utils_update(
 									m,
-									{K: string});
+									{a$: string});
 							}),
 						subject),
 					elm$core$Platform$Cmd$none);
@@ -6330,7 +6331,7 @@ var author$project$Main$update = F2(
 				return (elm$core$String$length(newUser) < 30) ? _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{S: newUser}),
+						{R: newUser}),
 					elm$core$Platform$Cmd$none) : _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
 		}
 	});
@@ -6346,149 +6347,11 @@ var author$project$Main$SubjectUpdate = function (a) {
 var author$project$Main$UserUpdate = function (a) {
 	return {$: 2, a: a};
 };
-var elm$time$Time$flooredDiv = F2(
-	function (numerator, denominator) {
-		return elm$core$Basics$floor(numerator / denominator);
-	});
-var elm$time$Time$posixToMillis = function (_n0) {
-	var millis = _n0;
-	return millis;
-};
-var elm$time$Time$toAdjustedMinutesHelp = F3(
-	function (defaultOffset, posixMinutes, eras) {
-		toAdjustedMinutesHelp:
-		while (true) {
-			if (!eras.b) {
-				return posixMinutes + defaultOffset;
-			} else {
-				var era = eras.a;
-				var olderEras = eras.b;
-				if (_Utils_cmp(era.ai, posixMinutes) < 0) {
-					return posixMinutes + era.au;
-				} else {
-					var $temp$defaultOffset = defaultOffset,
-						$temp$posixMinutes = posixMinutes,
-						$temp$eras = olderEras;
-					defaultOffset = $temp$defaultOffset;
-					posixMinutes = $temp$posixMinutes;
-					eras = $temp$eras;
-					continue toAdjustedMinutesHelp;
-				}
-			}
-		}
-	});
-var elm$time$Time$toAdjustedMinutes = F2(
-	function (_n0, time) {
-		var defaultOffset = _n0.a;
-		var eras = _n0.b;
-		return A3(
-			elm$time$Time$toAdjustedMinutesHelp,
-			defaultOffset,
-			A2(
-				elm$time$Time$flooredDiv,
-				elm$time$Time$posixToMillis(time),
-				60000),
-			eras);
-	});
-var elm$time$Time$toHour = F2(
-	function (zone, time) {
-		return A2(
-			elm$core$Basics$modBy,
-			24,
-			A2(
-				elm$time$Time$flooredDiv,
-				A2(elm$time$Time$toAdjustedMinutes, zone, time),
-				60));
-	});
-var elm$time$Time$toMinute = F2(
-	function (zone, time) {
-		return A2(
-			elm$core$Basics$modBy,
-			60,
-			A2(elm$time$Time$toAdjustedMinutes, zone, time));
-	});
-var elm$time$Time$toSecond = F2(
-	function (_n0, time) {
-		return A2(
-			elm$core$Basics$modBy,
-			60,
-			A2(
-				elm$time$Time$flooredDiv,
-				elm$time$Time$posixToMillis(time),
-				1000));
-	});
-var elm$time$Time$utc = A2(elm$time$Time$Zone, 0, _List_Nil);
-var author$project$Message$formatTime = function (time) {
-	return elm$core$String$fromInt(
-		A2(elm$time$Time$toHour, elm$time$Time$utc, time)) + (':' + (elm$core$String$fromInt(
-		A2(elm$time$Time$toMinute, elm$time$Time$utc, time)) + (':' + (elm$core$String$fromInt(
-		A2(elm$time$Time$toSecond, elm$time$Time$utc, time)) + ' (UTC)'))));
-};
-var elm$json$Json$Decode$map = _Json_map1;
-var elm$json$Json$Decode$map2 = _Json_map2;
-var elm$json$Json$Decode$succeed = _Json_succeed;
-var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
-	switch (handler.$) {
-		case 0:
-			return 0;
-		case 1:
-			return 1;
-		case 2:
-			return 2;
-		default:
-			return 3;
-	}
-};
-var elm$html$Html$b = _VirtualDom_node('b');
-var elm$html$Html$div = _VirtualDom_node('div');
-var elm$html$Html$i = _VirtualDom_node('i');
-var elm$html$Html$p = _VirtualDom_node('p');
-var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
-var author$project$Message$view = function (model) {
-	return A2(
-		elm$html$Html$div,
-		_List_Nil,
-		_List_fromArray(
-			[
-				A2(
-				elm$html$Html$b,
-				_List_Nil,
-				_List_fromArray(
-					[
-						elm$html$Html$text(model.aM.aN)
-					])),
-				elm$html$Html$text(' '),
-				A2(
-				elm$html$Html$i,
-				_List_Nil,
-				_List_fromArray(
-					[
-						elm$html$Html$text(
-						author$project$Message$formatTime(model.aL))
-					])),
-				elm$html$Html$text(' '),
-				A2(
-				elm$html$Html$b,
-				_List_Nil,
-				_List_fromArray(
-					[
-						elm$html$Html$text(model.K)
-					])),
-				A2(
-				elm$html$Html$p,
-				_List_Nil,
-				_List_fromArray(
-					[
-						elm$html$Html$text(model.al)
-					]))
-			]));
-};
 var author$project$RageGuy$rageGuyImageWidth = 540;
 var author$project$RageGuy$RageUp = function (a) {
 	return {$: 2, a: a};
 };
-var author$project$RageGuy$SetAutoRageUP = function (a) {
+var author$project$RageGuy$SetAutoRageUp = function (a) {
 	return {$: 1, a: a};
 };
 var author$project$RageGuy$startFrame = function (mood) {
@@ -6636,6 +6499,24 @@ var elm$core$List$take = F2(
 	function (n, list) {
 		return A3(elm$core$List$takeFast, 0, n, list);
 	});
+var elm$json$Json$Decode$map = _Json_map1;
+var elm$json$Json$Decode$map2 = _Json_map2;
+var elm$json$Json$Decode$succeed = _Json_succeed;
+var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
+	switch (handler.$) {
+		case 0:
+			return 0;
+		case 1:
+			return 1;
+		case 2:
+			return 2;
+		default:
+			return 3;
+	}
+};
+var elm$html$Html$div = _VirtualDom_node('div');
+var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
 var elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var elm$html$Html$Attributes$style = elm$virtual_dom$VirtualDom$style;
 var elm$html$Html$Attributes$width = function (n) {
@@ -6691,8 +6572,8 @@ var author$project$RageGuy$view = function (model) {
 				elm$core$Array$get,
 				A2(
 					elm$core$Basics$modBy,
-					n + model.q,
-					elm$core$Array$length(randomShifts)),
+					elm$core$Array$length(randomShifts),
+					n + model.p),
 				randomShifts));
 	};
 	var numberOfFFFRows = 5;
@@ -6761,7 +6642,7 @@ var author$project$RageGuy$view = function (model) {
 			A2(elm$core$List$range, 0, numberOfFFFRows * 2));
 	};
 	var fffuuuTextDivs = (model.k === 5) ? textDivs(
-		fffuuuuTextCut(model.q * 3)) : _List_Nil;
+		fffuuuuTextCut(model.p * 3)) : _List_Nil;
 	return A2(
 		elm$html$Html$div,
 		_List_fromArray(
@@ -6769,11 +6650,11 @@ var author$project$RageGuy$view = function (model) {
 				elm$html$Html$Events$onClick(
 				author$project$RageGuy$RageUp(1.0e-2)),
 				elm$html$Html$Events$onMouseDown(
-				author$project$RageGuy$SetAutoRageUP(true)),
+				author$project$RageGuy$SetAutoRageUp(true)),
 				elm$html$Html$Events$onMouseUp(
-				author$project$RageGuy$SetAutoRageUP(false)),
+				author$project$RageGuy$SetAutoRageUp(false)),
 				elm$html$Html$Events$onMouseLeave(
-				author$project$RageGuy$SetAutoRageUP(false)),
+				author$project$RageGuy$SetAutoRageUp(false)),
 				A2(elm$html$Html$Attributes$style, 'position', 'relative'),
 				elm$html$Html$Attributes$width(author$project$RageGuy$rageGuyImageWidth),
 				A2(
@@ -6805,15 +6686,15 @@ var author$project$Utils$toHex = function (n) {
 };
 var author$project$Utils$colorToHex = function (cl) {
 	var _n0 = cl;
-	var red = _n0.ag;
-	var green = _n0.ac;
-	var blue = _n0.ab;
-	var alpha = _n0.aa;
+	var red = _n0.af;
+	var green = _n0.ab;
+	var blue = _n0.aa;
+	var alpha = _n0._;
 	return '#' + (author$project$Utils$toHex(red) + (author$project$Utils$toHex(green) + author$project$Utils$toHex(blue)));
 };
 var author$project$Utils$rgb = F3(
 	function (red, green, blue) {
-		return {aa: 255, ab: blue, ac: green, ag: red};
+		return {_: 255, aa: blue, ab: green, af: red};
 	});
 var elm$core$Basics$round = _Basics_round;
 var elm$core$List$intersperse = F2(
@@ -6834,14 +6715,16 @@ var elm$core$List$intersperse = F2(
 			return A2(elm$core$List$cons, hd, spersed);
 		}
 	});
-var elm$html$Html$article = _VirtualDom_node('article');
+var elm$html$Html$b = _VirtualDom_node('b');
 var elm$html$Html$br = _VirtualDom_node('br');
 var elm$html$Html$h1 = _VirtualDom_node('h1');
 var elm$html$Html$header = _VirtualDom_node('header');
 var elm$html$Html$hr = _VirtualDom_node('hr');
+var elm$html$Html$i = _VirtualDom_node('i');
 var elm$html$Html$input = _VirtualDom_node('input');
 var elm$virtual_dom$VirtualDom$map = _VirtualDom_map;
 var elm$html$Html$map = elm$virtual_dom$VirtualDom$map;
+var elm$html$Html$p = _VirtualDom_node('p');
 var elm$html$Html$section = _VirtualDom_node('section');
 var elm$html$Html$textarea = _VirtualDom_node('textarea');
 var elm$json$Json$Encode$string = _Json_wrap;
@@ -6854,6 +6737,7 @@ var elm$html$Html$Attributes$stringProperty = F2(
 	});
 var elm$html$Html$Attributes$class = elm$html$Html$Attributes$stringProperty('className');
 var elm$html$Html$Attributes$placeholder = elm$html$Html$Attributes$stringProperty('placeholder');
+var elm$html$Html$Attributes$type_ = elm$html$Html$Attributes$stringProperty('type');
 var elm$html$Html$Attributes$value = elm$html$Html$Attributes$stringProperty('value');
 var elm$html$Html$Events$alwaysStop = function (x) {
 	return _Utils_Tuple2(x, true);
@@ -6888,7 +6772,108 @@ var elm$html$Html$Events$onInput = function (tagger) {
 			elm$html$Html$Events$alwaysStop,
 			A2(elm$json$Json$Decode$map, tagger, elm$html$Html$Events$targetValue)));
 };
+var elm$time$Time$flooredDiv = F2(
+	function (numerator, denominator) {
+		return elm$core$Basics$floor(numerator / denominator);
+	});
+var elm$time$Time$posixToMillis = function (_n0) {
+	var millis = _n0;
+	return millis;
+};
+var elm$time$Time$toAdjustedMinutesHelp = F3(
+	function (defaultOffset, posixMinutes, eras) {
+		toAdjustedMinutesHelp:
+		while (true) {
+			if (!eras.b) {
+				return posixMinutes + defaultOffset;
+			} else {
+				var era = eras.a;
+				var olderEras = eras.b;
+				if (_Utils_cmp(era.ah, posixMinutes) < 0) {
+					return posixMinutes + era.as;
+				} else {
+					var $temp$defaultOffset = defaultOffset,
+						$temp$posixMinutes = posixMinutes,
+						$temp$eras = olderEras;
+					defaultOffset = $temp$defaultOffset;
+					posixMinutes = $temp$posixMinutes;
+					eras = $temp$eras;
+					continue toAdjustedMinutesHelp;
+				}
+			}
+		}
+	});
+var elm$time$Time$toAdjustedMinutes = F2(
+	function (_n0, time) {
+		var defaultOffset = _n0.a;
+		var eras = _n0.b;
+		return A3(
+			elm$time$Time$toAdjustedMinutesHelp,
+			defaultOffset,
+			A2(
+				elm$time$Time$flooredDiv,
+				elm$time$Time$posixToMillis(time),
+				60000),
+			eras);
+	});
+var elm$time$Time$toHour = F2(
+	function (zone, time) {
+		return A2(
+			elm$core$Basics$modBy,
+			24,
+			A2(
+				elm$time$Time$flooredDiv,
+				A2(elm$time$Time$toAdjustedMinutes, zone, time),
+				60));
+	});
+var elm$time$Time$toMinute = F2(
+	function (zone, time) {
+		return A2(
+			elm$core$Basics$modBy,
+			60,
+			A2(elm$time$Time$toAdjustedMinutes, zone, time));
+	});
+var elm$time$Time$toSecond = F2(
+	function (_n0, time) {
+		return A2(
+			elm$core$Basics$modBy,
+			60,
+			A2(
+				elm$time$Time$flooredDiv,
+				elm$time$Time$posixToMillis(time),
+				1000));
+	});
+var elm$time$Time$utc = A2(elm$time$Time$Zone, 0, _List_Nil);
 var author$project$Main$view = function (model) {
+	var userNameInput = A2(
+		elm$html$Html$input,
+		_List_fromArray(
+			[
+				elm$html$Html$Attributes$type_('Text'),
+				elm$html$Html$Attributes$placeholder('Your  name'),
+				elm$html$Html$Attributes$value(model.R),
+				elm$html$Html$Events$onInput(author$project$Main$UserUpdate)
+			]),
+		_List_Nil);
+	var subjectInput = A2(
+		elm$html$Html$input,
+		_List_fromArray(
+			[
+				elm$html$Html$Attributes$type_('Text'),
+				elm$html$Html$Attributes$placeholder('Topic'),
+				elm$html$Html$Attributes$value(model.a$),
+				elm$html$Html$Events$onInput(author$project$Main$SubjectUpdate)
+			]),
+		_List_Nil);
+	var row = function (html) {
+		return A2(
+			elm$html$Html$div,
+			_List_fromArray(
+				[
+					elm$html$Html$Attributes$class('row')
+				]),
+			html);
+	};
 	var ratioTo255 = function (ratio) {
 		return elm$core$Basics$round(
 			A2(
@@ -6897,116 +6882,162 @@ var author$project$Main$view = function (model) {
 				A2(elm$core$Basics$min, ratio * 255, 255)));
 	};
 	var rageGuyView = A2(
-		elm$html$Html$map,
-		author$project$Main$RageGuyMsg,
-		author$project$RageGuy$view(model.o));
-	var inputStyle = elm$html$Html$Attributes$class('input');
-	var borderedStyle = elm$html$Html$Attributes$class('bordered');
+		elm$html$Html$div,
+		_List_fromArray(
+			[
+				A2(
+				elm$html$Html$Attributes$style,
+				'width',
+				elm$core$String$fromInt(author$project$RageGuy$rageGuyImageWidth) + 'px'),
+				elm$html$Html$Attributes$class('derp')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				elm$html$Html$map,
+				author$project$Main$RageGuyMsg,
+				author$project$RageGuy$view(model.o))
+			]));
+	var messageInput = A2(
+		elm$html$Html$textarea,
+		_List_fromArray(
+			[
+				A2(elm$html$Html$Attributes$style, 'height', '200'),
+				elm$html$Html$Attributes$placeholder('Enter your hate message. The more you swear the angrier Rage guy becomes! Click him to bully him even more, make him rage to have your message posted!'),
+				elm$html$Html$Attributes$value(model.G),
+				elm$html$Html$Events$onInput(author$project$Main$MessageUpdate)
+			]),
+		_List_Nil);
+	var formatTime = function (time) {
+		return elm$core$String$fromInt(
+			A2(elm$time$Time$toHour, elm$time$Time$utc, time)) + (':' + (elm$core$String$fromInt(
+			A2(elm$time$Time$toMinute, elm$time$Time$utc, time)) + (':' + (elm$core$String$fromInt(
+			A2(elm$time$Time$toSecond, elm$time$Time$utc, time)) + ' (UTC)'))));
+	};
+	var viewMessage = function (message) {
+		return A2(
+			elm$html$Html$div,
+			_List_fromArray(
+				[
+					elm$html$Html$Attributes$class('message')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					elm$html$Html$b,
+					_List_Nil,
+					_List_fromArray(
+						[
+							elm$html$Html$text(message.a5.a6)
+						])),
+					elm$html$Html$text(' '),
+					A2(
+					elm$html$Html$i,
+					_List_Nil,
+					_List_fromArray(
+						[
+							elm$html$Html$text(
+							formatTime(message.a1))
+						])),
+					elm$html$Html$text(' '),
+					A2(
+					elm$html$Html$b,
+					_List_Nil,
+					_List_fromArray(
+						[
+							elm$html$Html$text(message.a$)
+						])),
+					A2(
+					elm$html$Html$p,
+					_List_Nil,
+					_List_fromArray(
+						[
+							elm$html$Html$text(message.aM)
+						]))
+				]));
+	};
+	var fffuuuHeader = A2(
+		elm$html$Html$header,
+		_List_fromArray(
+			[
+				elm$html$Html$Attributes$class('bordered')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				elm$html$Html$h1,
+				_List_fromArray(
+					[
+						elm$html$Html$Attributes$class('top-label')
+					]),
+				_List_fromArray(
+					[
+						elm$html$Html$text('Frustrated? Hatin\' it? Roaring Rage?'),
+						A2(elm$html$Html$hr, _List_Nil, _List_Nil)
+					]))
+			]));
+	var container = function (html) {
+		return A2(
+			elm$html$Html$div,
+			_List_fromArray(
+				[
+					elm$html$Html$Attributes$class('container')
+				]),
+			html);
+	};
+	var col = function (html) {
+		return A2(
+			elm$html$Html$div,
+			_List_fromArray(
+				[
+					elm$html$Html$Attributes$class('column')
+				]),
+			html);
+	};
 	var angerColor = author$project$Utils$colorToHex(
 		A3(
 			author$project$Utils$rgb,
-			ratioTo255(model.p),
-			ratioTo255(model.p - 1.0),
-			ratioTo255(model.p - 1.0)));
+			255,
+			ratioTo255(0.98 - model.s),
+			ratioTo255(0.97 - model.s)));
 	return A2(
 		elm$html$Html$section,
 		_List_fromArray(
 			[
 				A2(elm$html$Html$Attributes$style, 'background', angerColor),
 				A2(elm$html$Html$Attributes$style, 'color', '#FFD0D0'),
-				A2(elm$html$Html$Attributes$style, 'font-size', '20px'),
-				A2(elm$html$Html$Attributes$style, 'margin', '1em 1.6em')
+				A2(elm$html$Html$Attributes$style, 'font-size', '20px')
 			]),
 		_List_fromArray(
 			[
-				A2(
-				elm$html$Html$header,
-				_List_fromArray(
-					[borderedStyle]),
+				fffuuuHeader,
+				container(
 				_List_fromArray(
 					[
-						A2(
-						elm$html$Html$h1,
+						row(
 						_List_fromArray(
 							[
-								elm$html$Html$Attributes$class('top-label')
-							]),
-						_List_fromArray(
-							[
-								elm$html$Html$text('Frustrated? Hatin\' it? Roaring Rage?')
-							]))
-					])),
-				A2(
-				elm$html$Html$article,
-				_List_Nil,
-				_List_fromArray(
-					[
-						A2(elm$html$Html$p, _List_Nil, _List_Nil),
+								col(
+								_List_fromArray(
+									[
+										userNameInput,
+										A2(elm$html$Html$br, _List_Nil, _List_Nil),
+										subjectInput,
+										A2(elm$html$Html$br, _List_Nil, _List_Nil),
+										messageInput
+									])),
+								col(
+								_List_fromArray(
+									[rageGuyView]))
+							])),
+						A2(elm$html$Html$hr, _List_Nil, _List_Nil),
 						A2(
 						elm$html$Html$div,
 						_List_Nil,
-						_List_fromArray(
-							[
-								A2(
-								elm$html$Html$input,
-								_List_fromArray(
-									[
-										inputStyle,
-										elm$html$Html$Attributes$placeholder('User'),
-										elm$html$Html$Attributes$value(model.S),
-										elm$html$Html$Events$onInput(author$project$Main$UserUpdate)
-									]),
-								_List_Nil),
-								A2(elm$html$Html$br, _List_Nil, _List_Nil),
-								A2(
-								elm$html$Html$input,
-								_List_fromArray(
-									[
-										inputStyle,
-										elm$html$Html$Attributes$placeholder('Topic'),
-										elm$html$Html$Attributes$value(model.K),
-										elm$html$Html$Events$onInput(author$project$Main$SubjectUpdate)
-									]),
-								_List_Nil),
-								A2(elm$html$Html$br, _List_Nil, _List_Nil),
-								A2(
-								elm$html$Html$textarea,
-								_List_fromArray(
-									[
-										inputStyle,
-										A2(elm$html$Html$Attributes$style, 'height', '360px'),
-										elm$html$Html$Attributes$placeholder('Enter your hatebook message and hold Derp image to post it. The more you swear the more angry he becomes!'),
-										elm$html$Html$Attributes$value(model.G),
-										elm$html$Html$Events$onInput(author$project$Main$MessageUpdate)
-									]),
-								_List_Nil),
-								A2(
-								elm$html$Html$div,
-								_List_fromArray(
-									[
-										A2(
-										elm$html$Html$Attributes$style,
-										'width',
-										elm$core$String$fromInt(author$project$RageGuy$rageGuyImageWidth) + 'px'),
-										A2(elm$html$Html$Attributes$style, 'margin', '0 auto')
-									]),
-								_List_fromArray(
-									[rageGuyView])),
-								A2(elm$html$Html$hr, _List_Nil, _List_Nil)
-							])),
 						A2(
-						elm$html$Html$article,
-						_List_Nil,
-						_List_fromArray(
-							[
-								A2(
-								elm$html$Html$div,
-								_List_Nil,
-								A2(
-									elm$core$List$intersperse,
-									A2(elm$html$Html$hr, _List_Nil, _List_Nil),
-									A2(elm$core$List$map, author$project$Message$view, model.P)))
-							]))
+							elm$core$List$intersperse,
+							A2(elm$html$Html$hr, _List_Nil, _List_Nil),
+							A2(elm$core$List$map, viewMessage, model.O)))
 					]))
 			]));
 };
@@ -7099,7 +7130,7 @@ var elm$core$String$left = F2(
 var elm$core$String$toInt = _String_toInt;
 var elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {aq: fragment, ar: host, av: path, ax: port_, aA: protocol, aB: query};
+		return {ao: fragment, ap: host, at: path, av: port_, ay: protocol, az: query};
 	});
 var elm$url$Url$chompBeforePath = F5(
 	function (protocol, path, params, frag, str) {
@@ -7205,6 +7236,6 @@ var elm$url$Url$fromString = function (str) {
 };
 var elm$browser$Browser$element = _Browser_element;
 var author$project$Main$main = elm$browser$Browser$element(
-	{aX: author$project$Main$init, a3: author$project$Main$subscriptions, a5: author$project$Main$update, a7: author$project$Main$view});
+	{aT: author$project$Main$init, a0: author$project$Main$subscriptions, a3: author$project$Main$update, a7: author$project$Main$view});
 _Platform_export({'Main':{'init':author$project$Main$main(
 	elm$json$Json$Decode$succeed(0))(0)}});}(this));
