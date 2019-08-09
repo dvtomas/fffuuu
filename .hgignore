@@ -1,0 +1,11 @@
+syntax: glob
+
+elm-stuff/
+node_modules/
+dist/*
+index.html
+
+/src_managed/*
+*~
+*.swp
+_tmp/*

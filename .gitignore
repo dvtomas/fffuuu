@@ -1,0 +1,12 @@
+*.iml
+*.log
+*~
+*.swp
+
+/.idea/
+/target/
+/elm-stuff/
+/dart-sass/
+/.idea_modules/
+
+/_tmp/
