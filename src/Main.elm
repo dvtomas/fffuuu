@@ -5,6 +5,8 @@ import Discussion
 import Html exposing (..)
 import Html.Attributes as A
 import Html.Events exposing (onInput)
+import Http
+import Json.Decode exposing (Decoder, field, string)
 import RageGuy
 import String
 import SwearWords
@@ -28,7 +30,7 @@ main =
 
 
 type alias Model =
-    { name : String
+    { username : String
     , topic : String
     , message : String
     , angerFlash : Float
@@ -40,7 +42,7 @@ type alias Model =
 
 
 initialModel =
-    { name = ""
+    { username = ""
     , topic = ""
     , message = ""
     , angerFlash = 0.0
@@ -65,6 +67,7 @@ type Msg
     | MessageUpdate String
     | Tick Time.Posix
     | AdjustTimeZone Time.Zone
+    | GotGif (Result Http.Error String)
 
 
 updatedModelRage :
@@ -111,6 +114,16 @@ updatedModelRage model maxLength stringGetter stringSetter newString =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        GotGif (Ok url) ->
+            ( { model | discussion = { username = "Cat", timestamp = Time.millisToPosix 0, topic = "Topic", message = url } :: model.discussion }
+            , Cmd.none
+            )
+
+        GotGif (Err _) ->
+            ( { model | discussion = { username = "Error", timestamp = Time.millisToPosix 0, topic = "Topic", message = "Error reading cat" } :: model.discussion }
+            , Cmd.none
+            )
+
         NoOp ->
             ( model, Cmd.none )
 
@@ -152,7 +165,7 @@ update msg model =
                         -- Start raging, post the message
                         let
                             user =
-                                Discussion.User model.name
+                                model.username
 
                             newMessage =
                                 Discussion.Message user model.time model.topic model.message
@@ -178,7 +191,7 @@ update msg model =
                             , rageGuy = RageGuy.update (RageGuy.RageUp 0.05) model.rageGuy
                         }
             in
-            ( newModel, Cmd.none )
+            ( newModel, getRandomCatGif )
 
         MessageUpdate message ->
             ( updatedModelRage model 2000 .message (\string m -> { m | message = string }) message
@@ -192,10 +205,14 @@ update msg model =
 
         UserUpdate newUser ->
             if String.length newUser < 30 then
-                ( { model | name = newUser }, Cmd.none )
+                ( { model | username = newUser }, Cmd.none )
 
             else
                 ( model, Cmd.none )
+
+
+
+-- VIEW
 
 
 view : Model -> Html Msg
@@ -257,11 +274,11 @@ view model =
                     [ text "Frustrated? Hatin' it? Roaring Rage?", hr [] [] ]
                 ]
 
-        userNameInput =
+        usernameInput =
             input
                 [ A.type_ "Text"
                 , A.placeholder "Your  name"
-                , A.value model.name
+                , A.value model.username
                 , onInput UserUpdate
                 ]
                 []
@@ -352,12 +369,13 @@ view model =
 
         viewMessage message =
             div [ A.class "message" ]
-                [ b [] [ text message.user.username ]
+                [ b [] [ text message.username ]
                 , text " "
                 , i [] [ text (formatTime model.zone message.timestamp) ]
                 , text " "
                 , b [] [ text message.topic ]
-                , p [] [ text message.body ]
+                , p [] [ text message.message ]
+                , img [ A.src message.message ] []
                 ]
 
         container html =
@@ -378,7 +396,7 @@ view model =
         , container
             [ row
                 [ col
-                    [ userNameInput
+                    [ usernameInput
                     , br [] []
                     , topicInput
                     , br [] []
@@ -391,6 +409,19 @@ view model =
             ]
         ]
 
+-- COMMANDS
+
+
+getRandomCatGif : Cmd Msg
+getRandomCatGif =
+  Http.get
+    { url = "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=fuck"
+    , expect = Http.expectJson GotGif gifDecoder
+    }
+
+gifDecoder : Decoder String
+gifDecoder =
+  field "data" (field "image_url" string)
 
 
 -- SUBSCRIPTIONS
