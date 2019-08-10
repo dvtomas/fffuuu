@@ -1,57 +1,58 @@
-module Czech exposing(words)
+module Czech exposing (words)
 
-words : List (String, Float)
-words = [
-  ("asran", 0.1),
-  ("blb", 0.1),
-  ("buzn", 0.1),
-  ("buzer", 0.1),
-  ("čubk", 0.1),
-  ("čurák", 0.1),
-  ("debil", 0.1),
-  ("demen", 0.1),
-  ("děvk", 0.1),
-  ("dylin", 0.1),
-  ("feťák", 0.1),
-  ("hajzl", 0.1),
-  ("hovad", 0.1),
-  ("hovn", 0.1),
-  ("chcan", 0.1),
-  ("chcat", 0.1),
-  ("chčij", 0.1),
-  ("čurák", 0.1),
-  ("idiot", 0.1),
-  ("jeb", 0.1),
-  ("kedr", 0.1),
-  ("kokot", 0.1),
-  ("koz", 0.1),
-  ("kráv", 0.1),
-  ("kretén", 0.1),
-  ("kripl", 0.1),
-  ("ksicht", 0.1),
-  ("kund", 0.1),
-  ("kurv", 0.1),
-  ("kuřbuřt", 0.1),
-  ("mrd", 0.1),
-  ("osel", 0.1),
-  ("píč", 0.1),
-  ("pipin", 0.1),
-  ("poděla", 0.1),
-  ("poser", 0.1),
-  ("pošuk", 0.1),
-  ("prd", 0.1),
-  ("prsatic", 0.1),
-  ("smažk", 0.1),
-  ("ser", 0.1),
-  ("srač", 0.1),
-  ("srát", 0.1),
-  ("šoust", 0.1),
-  ("šuk", 0.1),
-  ("úchyl", 0.1),
-  ("úřední", 0.1),
-  ("úřad", 0.1),
-  ("vůl", 0.1),
-  ("vol", 0.1),
-  ("zmrd", 0.1),
-  ("zoofil", 0.1)
- ]
+
+words : List ( String, Float )
+words =
+    [ ( "asran", 0.2 )
+    , ( "blb", 0.2 )
+    , ( "buzn", 0.2 )
+    , ( "buzer", 0.2 )
+    , ( "čubk", 0.2 )
+    , ( "čurák", 0.2 )
+    , ( "debil", 0.2 )
+    , ( "demen", 0.2 )
+    , ( "děvk", 0.2 )
+    , ( "dylin", 0.2 )
+    , ( "feťák", 0.2 )
+    , ( "hajzl", 0.2 )
+    , ( "hovad", 0.2 )
+    , ( "hovn", 0.2 )
+    , ( "chcan", 0.2 )
+    , ( "chcat", 0.2 )
+    , ( "chčij", 0.2 )
+    , ( "čurák", 0.2 )
+    , ( "idiot", 0.2 )
+    , ( "jeb", 0.2 )
+    , ( "kedr", 0.2 )
+    , ( "kokot", 0.2 )
+    , ( "koz", 0.2 )
+    , ( "kráv", 0.2 )
+    , ( "kretén", 0.2 )
+    , ( "kripl", 0.2 )
+    , ( "ksicht", 0.2 )
+    , ( "kund", 0.2 )
+    , ( "kurv", 0.2 )
+    , ( "kuřbuřt", 0.2 )
+    , ( "mrd", 0.2 )
+    , ( "osel", 0.2 )
+    , ( "píč", 0.2 )
+    , ( "pipin", 0.2 )
+    , ( "poděla", 0.2 )
+    , ( "poser", 0.2 )
+    , ( "pošuk", 0.2 )
+    , ( "prd", 0.2 )
+    , ( "prsatic", 0.2 )
+    , ( "smažk", 0.2 )
+    , ( "ser", 0.2 )
+    , ( "srač", 0.2 )
+    , ( "srát", 0.2 )
+    , ( "šoust", 0.2 )
+    , ( "šuk", 0.2 )
+    , ( "úchyl", 0.2 )
+    , ( "úřední", 0.2 )
+    , ( "úřad", 0.2 )
+    , ( "vůl", 0.2 )
+    , ( "vol", 0.2 )
+    , ( "zmrd", 0.2 )
+    , ( "zoofil", 0.2 )
+    ]

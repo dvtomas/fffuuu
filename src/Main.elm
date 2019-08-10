@@ -87,7 +87,7 @@ updatedModelRage model maxLength stringGetter stringSetter newString =
                 severityOfMaybeSwearWordAdded + severityOfMaybeCharsAdded
 
             angerFlash =
-                (50 * addedSeverity + model.angerFlash) |> Basics.min 5.0
+                (5 * addedSeverity + model.angerFlash) |> Basics.min 4.0
 
             rageGuy =
                 RageGuy.update (RageGuy.RageUp addedSeverity) model.rageGuy
@@ -115,7 +115,8 @@ update msg model =
                 rageGuy =
                     RageGuy.update RageGuy.Tick model.rageGuy
 
-                angerFlash = model.angerFlash - 0.2
+                angerFlash =
+                    model.angerFlash - 0.2 |> Basics.max 0.0
             in
             ( { model | time = time, rageGuy = rageGuy, angerFlash = angerFlash }, Cmd.none )
 
@@ -219,7 +220,7 @@ view model =
 
                 anger =
                     if model.rageGuy.targetAnger < 1.0 then
-                        model.angerFlash * 0.1
+                        model.angerFlash
 
                     else if not model.rageGuy.isRaging then
                         -- Click to rage

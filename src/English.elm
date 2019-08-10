@@ -1,96 +1,97 @@
-module English exposing(words)
+module English exposing (words)
 
-words : List (String, Float)
-words = [
-  ("anal", 0.1),
-  ("anus", 0.1),
-  ("arse", 0.1),
-  ("ass", 0.1),
-  ("asses", 0.1),
-  ("assfuck", 0.1),
-  ("asshole", 0.1),
-  ("assholes", 0.1),
-  ("asswhole", 0.1),
-  ("balls", 0.1),
-  ("ballsack", 0.1),
-  ("bastard", 0.1),
-  ("beastial", 0.1),
-  ("biatch", 0.1),
-  ("bitch", 0.1),
-  ("bloody", 0.1),
-  ("blowjob", 0.1),
-  ("bollock", 0.1),
-  ("boner", 0.1),
-  ("boobs", 0.1),
-  ("butt", 0.1),
-  ("butthole", 0.1),
-  ("cant", 0.1),
-  ("cock", 0.1),
-  ("cockface", 0.1),
-  ("cockhead", 0.1),
-  ("cockmunch", 0.1),
-  ("cockmuncher", 0.1),
-  ("cocksucker", 0.1),
-  ("cocksucking", 0.1),
-  ("cum", 0.1),
-  ("cumshot", 0.1),
-  ("cunt", 0.1),
-  ("cuntlicker", 0.1),
-  ("damn", 0.1),
-  ("dammit", 0.1),
-  ("dick", 0.1),
-  ("dickhead", 0.1),
-  ("die", 0.2),
-  ("dildo", 0.1),
-  ("dink", 0.1),
-  ("dyke", 0.1),
-  ("fag", 0.1),
-  ("faggot", 0.1),
-  ("fanny", 0.1),
-  ("fistfuck", 0.1),
-  ("fffuuu", 0.3),
-  ("ffffffuuuuuuuuuu", 0.2),
-  ("fuck", 0.1),
-  ("fucker", 0.1),
-  ("fuckhead", 0.1),
-  ("fuckin", 0.1),
-  ("gangbang", 0.1),
-  ("gay", 0.1),
-  ("gaylord", 0.1),
-  ("gaysex", 0.1),
-  ("goddamn", 0.1),
-  ("hell", 0.1),
-  ("homo", 0.1),
-  ("hate", 0.1),
-  ("idiot", 0.1),
-  ("jerk", 0.1),
-  ("kill", 0.2),
-  ("mofo", 0.1),
-  ("mothafuck", 0.1),
-  ("motherfuck", 0.1),
-  ("moron", 0.1),
-  ("no", 0.05),
-  ("piss", 0.1),
-  ("pussy", 0.1),
-  ("rage", 0.1),
-  ("rectum", 0.1),
-  ("retard", 0.1),
-  ("rimjaw", 0.1),
-  ("rimming", 0.1),
-  ("rimjob", 0.1),
-  ("screw", 0.1),
-  ("shag", 0.1),
-  ("shit", 0.1),
-  ("shitdick", 0.1),
-  ("shithead", 0.1),
-  ("skank", 0.1),
-  ("slut", 0.1),
-  ("smegma", 0.1),
-  ("smut", 0.1),
-  ("snatch", 0.1),
-  ("spac", 0.1),
-  ("spunk", 0.1),
-  ("wank", 0.1),
-  ("whore", 0.1)
- ]
 
+words : List ( String, Float )
+words =
+    [ ( "anal", 0.2 )
+    , ( "anus", 0.2 )
+    , ( "arse", 0.2 )
+    , ( "ass", 0.2 )
+    , ( "asses", 0.2 )
+    , ( "assfuck", 0.2 )
+    , ( "asshole", 0.2 )
+    , ( "assholes", 0.2 )
+    , ( "asswhole", 0.2 )
+    , ( "balls", 0.2 )
+    , ( "ballsack", 0.2 )
+    , ( "bastard", 0.2 )
+    , ( "beastial", 0.2 )
+    , ( "biatch", 0.2 )
+    , ( "bitch", 0.2 )
+    , ( "bloody", 0.2 )
+    , ( "blowjob", 0.2 )
+    , ( "bollock", 0.2 )
+    , ( "boner", 0.2 )
+    , ( "boobs", 0.2 )
+    , ( "butt", 0.2 )
+    , ( "butthole", 0.2 )
+    , ( "cant", 0.2 )
+    , ( "cock", 0.2 )
+    , ( "cockface", 0.2 )
+    , ( "cockhead", 0.2 )
+    , ( "cockmunch", 0.2 )
+    , ( "cockmuncher", 0.2 )
+    , ( "cocksucker", 0.2 )
+    , ( "cocksucking", 0.2 )
+    , ( "cum", 0.2 )
+    , ( "cumshot", 0.2 )
+    , ( "cunt", 0.2 )
+    , ( "cuntlicker", 0.2 )
+    , ( "damn", 0.2 )
+    , ( "dammit", 0.2 )
+    , ( "dick", 0.2 )
+    , ( "dickhead", 0.2 )
+    , ( "die", 0.4 )
+    , ( "dildo", 0.2 )
+    , ( "dink", 0.2 )
+    , ( "dirty", 0.2 )
+    , ( "dyke", 0.2 )
+    , ( "fag", 0.2 )
+    , ( "faggot", 0.2 )
+    , ( "fanny", 0.2 )
+    , ( "fistfuck", 0.2 )
+    , ( "fffuuu", 0.4 )
+    , ( "ffffffuuuuuuuuuu", 0.4 )
+    , ( "fuck", 0.2 )
+    , ( "fucker", 0.2 )
+    , ( "fuckhead", 0.2 )
+    , ( "fuckin", 0.2 )
+    , ( "gangbang", 0.2 )
+    , ( "gay", 0.2 )
+    , ( "gaylord", 0.2 )
+    , ( "gaysex", 0.2 )
+    , ( "goddamn", 0.2 )
+    , ( "hell", 0.2 )
+    , ( "homo", 0.2 )
+    , ( "hate", 0.2 )
+    , ( "idiot", 0.2 )
+    , ( "jerk", 0.2 )
+    , ( "kill", 0.4 )
+    , ( "mofo", 0.2 )
+    , ( "mothafuck", 0.2 )
+    , ( "motherfuck", 0.2 )
+    , ( "moron", 0.2 )
+    , ( "no", 0.05 )
+    , ( "piss", 0.2 )
+    , ( "pussy", 0.2 )
+    , ( "rage", 0.2 )
+    , ( "rectum", 0.2 )
+    , ( "retard", 0.2 )
+    , ( "rimjaw", 0.2 )
+    , ( "rimming", 0.2 )
+    , ( "rimjob", 0.2 )
+    , ( "screw", 0.2 )
+    , ( "shag", 0.2 )
+    , ( "shit", 0.2 )
+    , ( "shitdick", 0.2 )
+    , ( "shithead", 0.2 )
+    , ( "skank", 0.2 )
+    , ( "slut", 0.2 )
+    , ( "smegma", 0.2 )
+    , ( "smut", 0.2 )
+    , ( "snatch", 0.2 )
+    , ( "spac", 0.2 )
+    , ( "spunk", 0.2 )
+    , ( "wank", 0.2 )
+    , ( "whore", 0.2 )
+    ]
