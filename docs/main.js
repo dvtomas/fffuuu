@@ -519,11 +519,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.ah.P === region.am.P)
+	if (region.ai.P === region.an.P)
 	{
-		return 'on line ' + region.ah.P;
+		return 'on line ' + region.ai.P;
 	}
-	return 'on lines ' + region.ah.P + ' through ' + region.am.P;
+	return 'on lines ' + region.ai.P + ' through ' + region.an.P;
 }
 
 
@@ -790,6 +790,197 @@ var _List_sortWith = F2(function(f, xs)
 		return ord === elm$core$Basics$EQ ? 0 : ord === elm$core$Basics$LT ? -1 : 1;
 	}));
 });
+
+
+
+// TASKS
+
+function _Scheduler_succeed(value)
+{
+	return {
+		$: 0,
+		a: value
+	};
+}
+
+function _Scheduler_fail(error)
+{
+	return {
+		$: 1,
+		a: error
+	};
+}
+
+function _Scheduler_binding(callback)
+{
+	return {
+		$: 2,
+		b: callback,
+		c: null
+	};
+}
+
+var _Scheduler_andThen = F2(function(callback, task)
+{
+	return {
+		$: 3,
+		b: callback,
+		d: task
+	};
+});
+
+var _Scheduler_onError = F2(function(callback, task)
+{
+	return {
+		$: 4,
+		b: callback,
+		d: task
+	};
+});
+
+function _Scheduler_receive(callback)
+{
+	return {
+		$: 5,
+		b: callback
+	};
+}
+
+
+// PROCESSES
+
+var _Scheduler_guid = 0;
+
+function _Scheduler_rawSpawn(task)
+{
+	var proc = {
+		$: 0,
+		e: _Scheduler_guid++,
+		f: task,
+		g: null,
+		h: []
+	};
+
+	_Scheduler_enqueue(proc);
+
+	return proc;
+}
+
+function _Scheduler_spawn(task)
+{
+	return _Scheduler_binding(function(callback) {
+		callback(_Scheduler_succeed(_Scheduler_rawSpawn(task)));
+	});
+}
+
+function _Scheduler_rawSend(proc, msg)
+{
+	proc.h.push(msg);
+	_Scheduler_enqueue(proc);
+}
+
+var _Scheduler_send = F2(function(proc, msg)
+{
+	return _Scheduler_binding(function(callback) {
+		_Scheduler_rawSend(proc, msg);
+		callback(_Scheduler_succeed(_Utils_Tuple0));
+	});
+});
+
+function _Scheduler_kill(proc)
+{
+	return _Scheduler_binding(function(callback) {
+		var task = proc.f;
+		if (task.$ === 2 && task.c)
+		{
+			task.c();
+		}
+
+		proc.f = null;
+
+		callback(_Scheduler_succeed(_Utils_Tuple0));
+	});
+}
+
+
+/* STEP PROCESSES
+
+type alias Process =
+  { $ : tag
+  , id : unique_id
+  , root : Task
+  , stack : null | { $: SUCCEED | FAIL, a: callback, b: stack }
+  , mailbox : [msg]
+  }
+
+*/
+
+
+var _Scheduler_working = false;
+var _Scheduler_queue = [];
+
+
+function _Scheduler_enqueue(proc)
+{
+	_Scheduler_queue.push(proc);
+	if (_Scheduler_working)
+	{
+		return;
+	}
+	_Scheduler_working = true;
+	while (proc = _Scheduler_queue.shift())
+	{
+		_Scheduler_step(proc);
+	}
+	_Scheduler_working = false;
+}
+
+
+function _Scheduler_step(proc)
+{
+	while (proc.f)
+	{
+		var rootTag = proc.f.$;
+		if (rootTag === 0 || rootTag === 1)
+		{
+			while (proc.g && proc.g.$ !== rootTag)
+			{
+				proc.g = proc.g.i;
+			}
+			if (!proc.g)
+			{
+				return;
+			}
+			proc.f = proc.g.b(proc.f.a);
+			proc.g = proc.g.i;
+		}
+		else if (rootTag === 2)
+		{
+			proc.f.c = proc.f.b(function(newRoot) {
+				proc.f = newRoot;
+				_Scheduler_enqueue(proc);
+			});
+			return;
+		}
+		else if (rootTag === 5)
+		{
+			if (proc.h.length === 0)
+			{
+				return;
+			}
+			proc.f = proc.f.b(proc.h.shift());
+		}
+		else // if (rootTag === 3 || rootTag === 4)
+		{
+			proc.g = {
+				$: rootTag === 3 ? 0 : 1,
+				b: proc.f.b,
+				i: proc.g
+			};
+			proc.f = proc.f.d;
+		}
+	}
+}
 
 
 
@@ -1644,197 +1835,6 @@ var _Json_encodeNull = _Json_wrap(null);
 
 
 
-// TASKS
-
-function _Scheduler_succeed(value)
-{
-	return {
-		$: 0,
-		a: value
-	};
-}
-
-function _Scheduler_fail(error)
-{
-	return {
-		$: 1,
-		a: error
-	};
-}
-
-function _Scheduler_binding(callback)
-{
-	return {
-		$: 2,
-		b: callback,
-		c: null
-	};
-}
-
-var _Scheduler_andThen = F2(function(callback, task)
-{
-	return {
-		$: 3,
-		b: callback,
-		d: task
-	};
-});
-
-var _Scheduler_onError = F2(function(callback, task)
-{
-	return {
-		$: 4,
-		b: callback,
-		d: task
-	};
-});
-
-function _Scheduler_receive(callback)
-{
-	return {
-		$: 5,
-		b: callback
-	};
-}
-
-
-// PROCESSES
-
-var _Scheduler_guid = 0;
-
-function _Scheduler_rawSpawn(task)
-{
-	var proc = {
-		$: 0,
-		e: _Scheduler_guid++,
-		f: task,
-		g: null,
-		h: []
-	};
-
-	_Scheduler_enqueue(proc);
-
-	return proc;
-}
-
-function _Scheduler_spawn(task)
-{
-	return _Scheduler_binding(function(callback) {
-		callback(_Scheduler_succeed(_Scheduler_rawSpawn(task)));
-	});
-}
-
-function _Scheduler_rawSend(proc, msg)
-{
-	proc.h.push(msg);
-	_Scheduler_enqueue(proc);
-}
-
-var _Scheduler_send = F2(function(proc, msg)
-{
-	return _Scheduler_binding(function(callback) {
-		_Scheduler_rawSend(proc, msg);
-		callback(_Scheduler_succeed(_Utils_Tuple0));
-	});
-});
-
-function _Scheduler_kill(proc)
-{
-	return _Scheduler_binding(function(callback) {
-		var task = proc.f;
-		if (task.$ === 2 && task.c)
-		{
-			task.c();
-		}
-
-		proc.f = null;
-
-		callback(_Scheduler_succeed(_Utils_Tuple0));
-	});
-}
-
-
-/* STEP PROCESSES
-
-type alias Process =
-  { $ : tag
-  , id : unique_id
-  , root : Task
-  , stack : null | { $: SUCCEED | FAIL, a: callback, b: stack }
-  , mailbox : [msg]
-  }
-
-*/
-
-
-var _Scheduler_working = false;
-var _Scheduler_queue = [];
-
-
-function _Scheduler_enqueue(proc)
-{
-	_Scheduler_queue.push(proc);
-	if (_Scheduler_working)
-	{
-		return;
-	}
-	_Scheduler_working = true;
-	while (proc = _Scheduler_queue.shift())
-	{
-		_Scheduler_step(proc);
-	}
-	_Scheduler_working = false;
-}
-
-
-function _Scheduler_step(proc)
-{
-	while (proc.f)
-	{
-		var rootTag = proc.f.$;
-		if (rootTag === 0 || rootTag === 1)
-		{
-			while (proc.g && proc.g.$ !== rootTag)
-			{
-				proc.g = proc.g.i;
-			}
-			if (!proc.g)
-			{
-				return;
-			}
-			proc.f = proc.g.b(proc.f.a);
-			proc.g = proc.g.i;
-		}
-		else if (rootTag === 2)
-		{
-			proc.f.c = proc.f.b(function(newRoot) {
-				proc.f = newRoot;
-				_Scheduler_enqueue(proc);
-			});
-			return;
-		}
-		else if (rootTag === 5)
-		{
-			if (proc.h.length === 0)
-			{
-				return;
-			}
-			proc.f = proc.f.b(proc.h.shift());
-		}
-		else // if (rootTag === 3 || rootTag === 4)
-		{
-			proc.g = {
-				$: rootTag === 3 ? 0 : 1,
-				b: proc.f.b,
-				i: proc.g
-			};
-			proc.f = proc.f.d;
-		}
-	}
-}
-
-
-
 function _Process_sleep(time)
 {
 	return _Scheduler_binding(function(callback) {
@@ -1857,9 +1857,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aS,
-		impl.a3,
-		impl.a$,
+		impl.aT,
+		impl.a4,
+		impl.a0,
 		function() { return function() {} }
 	);
 });
@@ -2743,8 +2743,8 @@ var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
 		s: func(record.s),
-		ai: record.ai,
-		ae: record.ae
+		aj: record.aj,
+		af: record.af
 	}
 });
 
@@ -3013,10 +3013,10 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 
 		var value = result.a;
 		var message = !tag ? value : tag < 3 ? value.a : value.s;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.ai;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.aj;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value.ae) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.af) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -3962,11 +3962,11 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aS,
-		impl.a3,
-		impl.a$,
+		impl.aT,
+		impl.a4,
+		impl.a0,
 		function(sendToApp, initialModel) {
-			var view = impl.a7;
+			var view = impl.a8;
 			/**/
 			var domNode = args['node'];
 			//*/
@@ -3998,12 +3998,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aS,
-		impl.a3,
-		impl.a$,
+		impl.aT,
+		impl.a4,
+		impl.a0,
 		function(sendToApp, initialModel) {
 			var divertHrefToApp = impl.R && impl.R(sendToApp)
-			var view = impl.a7;
+			var view = impl.a8;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
 			var currNode = _VirtualDom_virtualize(bodyNode);
@@ -4011,12 +4011,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.aL);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.aM);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.a1) && (_VirtualDom_doc.title = title = doc.a1);
+				(title !== doc.a2) && (_VirtualDom_doc.title = title = doc.a2);
 			});
 		}
 	);
@@ -4067,8 +4067,8 @@ function _Browser_makeAnimator(model, draw)
 
 function _Browser_application(impl)
 {
-	var onUrlChange = impl.aU;
-	var onUrlRequest = impl.aV;
+	var onUrlChange = impl.aV;
+	var onUrlRequest = impl.aW;
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
@@ -4088,9 +4088,9 @@ function _Browser_application(impl)
 					var next = elm$url$Url$fromString(href).a;
 					sendToApp(onUrlRequest(
 						(next
-							&& curr.ay === next.ay
-							&& curr.ap === next.ap
-							&& curr.av.a === next.av.a
+							&& curr.az === next.az
+							&& curr.aq === next.aq
+							&& curr.aw.a === next.aw.a
 						)
 							? elm$browser$Browser$Internal(next)
 							: elm$browser$Browser$External(href)
@@ -4098,13 +4098,13 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		aS: function(flags)
+		aT: function(flags)
 		{
-			return A3(impl.aS, flags, _Browser_getUrl(), key);
+			return A3(impl.aT, flags, _Browser_getUrl(), key);
 		},
-		a7: impl.a7,
-		a3: impl.a3,
-		a$: impl.a$
+		a8: impl.a8,
+		a4: impl.a4,
+		a0: impl.a0
 	});
 }
 
@@ -4170,17 +4170,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { aQ: 'hidden', L: 'visibilitychange' }
+		? { aR: 'hidden', L: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { aQ: 'mozHidden', L: 'mozvisibilitychange' }
+		? { aR: 'mozHidden', L: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { aQ: 'msHidden', L: 'msvisibilitychange' }
+		? { aR: 'msHidden', L: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { aQ: 'webkitHidden', L: 'webkitvisibilitychange' }
-		: { aQ: 'hidden', L: 'visibilitychange' };
+		? { aR: 'webkitHidden', L: 'webkitvisibilitychange' }
+		: { aR: 'hidden', L: 'visibilitychange' };
 }
 
 
@@ -4261,8 +4261,8 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		aE: _Browser_getScene(),
-		aI: {
+		aF: _Browser_getScene(),
+		aJ: {
 			Y: _Browser_window.pageXOffset,
 			Z: _Browser_window.pageYOffset,
 			J: _Browser_doc.documentElement.clientWidth,
@@ -4300,11 +4300,11 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			aE: {
+			aF: {
 				J: node.scrollWidth,
 				E: node.scrollHeight
 			},
-			aI: {
+			aJ: {
 				Y: node.scrollLeft,
 				Z: node.scrollTop,
 				J: node.clientWidth,
@@ -4338,14 +4338,14 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			aE: _Browser_getScene(),
-			aI: {
+			aF: _Browser_getScene(),
+			aJ: {
 				Y: x,
 				Z: y,
 				J: _Browser_doc.documentElement.clientWidth,
 				E: _Browser_doc.documentElement.clientHeight
 			},
-			aN: {
+			aO: {
 				Y: x + rect.left,
 				Z: y + rect.top,
 				J: rect.width,
@@ -4384,9 +4384,12 @@ function _Browser_load(url)
 		}
 	}));
 }
+var author$project$Main$AdjustTimeZone = function (a) {
+	return {$: 7, a: a};
+};
 var author$project$RageGuy$Neutral = 0;
 var elm$core$Basics$False = 1;
-var author$project$RageGuy$initialModel = {o: 0, N: false, O: false, y: 0, aT: 0, T: 0};
+var author$project$RageGuy$initialModel = {o: 0, N: false, O: false, y: 0, aU: 0, T: 0};
 var elm$core$Basics$EQ = 1;
 var elm$core$Basics$LT = 0;
 var elm$core$Elm$JsArray$foldr = _JsArray_foldr;
@@ -4472,6 +4475,11 @@ var elm$core$Basics$identity = function (x) {
 };
 var elm$time$Time$Posix = elm$core$Basics$identity;
 var elm$time$Time$millisToPosix = elm$core$Basics$identity;
+var elm$time$Time$Zone = F2(
+	function (a, b) {
+		return {$: 0, a: a, b: b};
+	});
+var elm$time$Time$utc = A2(elm$time$Time$Zone, 0, _List_Nil);
 var author$project$Main$initialModel = {
 	h: 0.0,
 	M: _List_Nil,
@@ -4479,7 +4487,141 @@ var author$project$Main$initialModel = {
 	Q: '',
 	e: author$project$RageGuy$initialModel,
 	U: elm$time$Time$millisToPosix(0),
-	a2: ''
+	a3: '',
+	_: elm$time$Time$utc
+};
+var elm$core$Task$Perform = elm$core$Basics$identity;
+var elm$core$Task$succeed = _Scheduler_succeed;
+var elm$core$Task$init = elm$core$Task$succeed(0);
+var elm$core$Basics$add = _Basics_add;
+var elm$core$Basics$gt = _Utils_gt;
+var elm$core$List$foldl = F3(
+	function (func, acc, list) {
+		foldl:
+		while (true) {
+			if (!list.b) {
+				return acc;
+			} else {
+				var x = list.a;
+				var xs = list.b;
+				var $temp$func = func,
+					$temp$acc = A2(func, x, acc),
+					$temp$list = xs;
+				func = $temp$func;
+				acc = $temp$acc;
+				list = $temp$list;
+				continue foldl;
+			}
+		}
+	});
+var elm$core$List$reverse = function (list) {
+	return A3(elm$core$List$foldl, elm$core$List$cons, _List_Nil, list);
+};
+var elm$core$List$foldrHelper = F4(
+	function (fn, acc, ctr, ls) {
+		if (!ls.b) {
+			return acc;
+		} else {
+			var a = ls.a;
+			var r1 = ls.b;
+			if (!r1.b) {
+				return A2(fn, a, acc);
+			} else {
+				var b = r1.a;
+				var r2 = r1.b;
+				if (!r2.b) {
+					return A2(
+						fn,
+						a,
+						A2(fn, b, acc));
+				} else {
+					var c = r2.a;
+					var r3 = r2.b;
+					if (!r3.b) {
+						return A2(
+							fn,
+							a,
+							A2(
+								fn,
+								b,
+								A2(fn, c, acc)));
+					} else {
+						var d = r3.a;
+						var r4 = r3.b;
+						var res = (ctr > 500) ? A3(
+							elm$core$List$foldl,
+							fn,
+							acc,
+							elm$core$List$reverse(r4)) : A4(elm$core$List$foldrHelper, fn, acc, ctr + 1, r4);
+						return A2(
+							fn,
+							a,
+							A2(
+								fn,
+								b,
+								A2(
+									fn,
+									c,
+									A2(fn, d, res))));
+					}
+				}
+			}
+		}
+	});
+var elm$core$List$foldr = F3(
+	function (fn, acc, ls) {
+		return A4(elm$core$List$foldrHelper, fn, acc, 0, ls);
+	});
+var elm$core$List$map = F2(
+	function (f, xs) {
+		return A3(
+			elm$core$List$foldr,
+			F2(
+				function (x, acc) {
+					return A2(
+						elm$core$List$cons,
+						f(x),
+						acc);
+				}),
+			_List_Nil,
+			xs);
+	});
+var elm$core$Basics$apR = F2(
+	function (x, f) {
+		return f(x);
+	});
+var elm$core$Task$andThen = _Scheduler_andThen;
+var elm$core$Task$map = F2(
+	function (func, taskA) {
+		return A2(
+			elm$core$Task$andThen,
+			function (a) {
+				return elm$core$Task$succeed(
+					func(a));
+			},
+			taskA);
+	});
+var elm$core$Task$map2 = F3(
+	function (func, taskA, taskB) {
+		return A2(
+			elm$core$Task$andThen,
+			function (a) {
+				return A2(
+					elm$core$Task$andThen,
+					function (b) {
+						return elm$core$Task$succeed(
+							A2(func, a, b));
+					},
+					taskB);
+			},
+			taskA);
+	});
+var elm$core$Task$sequence = function (tasks) {
+	return A3(
+		elm$core$List$foldr,
+		elm$core$Task$map2(elm$core$List$cons),
+		elm$core$Task$succeed(_List_Nil),
+		tasks);
 };
 var elm$core$Basics$True = 0;
 var elm$core$Result$isOk = function (result) {
@@ -4512,28 +4654,6 @@ var elm$core$Array$SubTree = function (a) {
 	return {$: 0, a: a};
 };
 var elm$core$Elm$JsArray$initializeFromList = _JsArray_initializeFromList;
-var elm$core$List$foldl = F3(
-	function (func, acc, list) {
-		foldl:
-		while (true) {
-			if (!list.b) {
-				return acc;
-			} else {
-				var x = list.a;
-				var xs = list.b;
-				var $temp$func = func,
-					$temp$acc = A2(func, x, acc),
-					$temp$list = xs;
-				func = $temp$func;
-				acc = $temp$acc;
-				list = $temp$list;
-				continue foldl;
-			}
-		}
-	});
-var elm$core$List$reverse = function (list) {
-	return A3(elm$core$List$foldl, elm$core$List$cons, _List_Nil, list);
-};
 var elm$core$Array$compressNodes = F2(
 	function (nodes, acc) {
 		compressNodes:
@@ -4556,10 +4676,6 @@ var elm$core$Array$compressNodes = F2(
 			}
 		}
 	});
-var elm$core$Basics$apR = F2(
-	function (x, f) {
-		return f(x);
-	});
 var elm$core$Basics$eq = _Utils_equal;
 var elm$core$Tuple$first = function (_n0) {
 	var x = _n0.a;
@@ -4581,13 +4697,11 @@ var elm$core$Array$treeFromBuilder = F2(
 			}
 		}
 	});
-var elm$core$Basics$add = _Basics_add;
 var elm$core$Basics$apL = F2(
 	function (f, x) {
 		return f(x);
 	});
 var elm$core$Basics$floor = _Basics_floor;
-var elm$core$Basics$gt = _Utils_gt;
 var elm$core$Basics$max = F2(
 	function (x, y) {
 		return (_Utils_cmp(x, y) > 0) ? x : y;
@@ -4875,10 +4989,57 @@ var elm$json$Json$Decode$errorToStringHelp = F2(
 			}
 		}
 	});
-var elm$core$Platform$Cmd$batch = _Platform_batch;
-var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
+var elm$core$Platform$sendToApp = _Platform_sendToApp;
+var elm$core$Task$spawnCmd = F2(
+	function (router, _n0) {
+		var task = _n0;
+		return _Scheduler_spawn(
+			A2(
+				elm$core$Task$andThen,
+				elm$core$Platform$sendToApp(router),
+				task));
+	});
+var elm$core$Task$onEffects = F3(
+	function (router, commands, state) {
+		return A2(
+			elm$core$Task$map,
+			function (_n0) {
+				return 0;
+			},
+			elm$core$Task$sequence(
+				A2(
+					elm$core$List$map,
+					elm$core$Task$spawnCmd(router),
+					commands)));
+	});
+var elm$core$Task$onSelfMsg = F3(
+	function (_n0, _n1, _n2) {
+		return elm$core$Task$succeed(0);
+	});
+var elm$core$Task$cmdMap = F2(
+	function (tagger, _n0) {
+		var task = _n0;
+		return A2(elm$core$Task$map, tagger, task);
+	});
+_Platform_effectManagers['Task'] = _Platform_createManager(elm$core$Task$init, elm$core$Task$onEffects, elm$core$Task$onSelfMsg, elm$core$Task$cmdMap);
+var elm$core$Task$command = _Platform_leaf('Task');
+var elm$core$Task$perform = F2(
+	function (toMessage, task) {
+		return elm$core$Task$command(
+			A2(elm$core$Task$map, toMessage, task));
+	});
+var elm$time$Time$Name = function (a) {
+	return {$: 0, a: a};
+};
+var elm$time$Time$Offset = function (a) {
+	return {$: 1, a: a};
+};
+var elm$time$Time$customZone = elm$time$Time$Zone;
+var elm$time$Time$here = _Time_here(0);
 var author$project$Main$init = function (_n0) {
-	return _Utils_Tuple2(author$project$Main$initialModel, elm$core$Platform$Cmd$none);
+	return _Utils_Tuple2(
+		author$project$Main$initialModel,
+		A2(elm$core$Task$perform, author$project$Main$AdjustTimeZone, elm$time$Time$here));
 };
 var author$project$Main$Tick = function (a) {
 	return {$: 6, a: a};
@@ -4889,10 +5050,9 @@ var elm$time$Time$Every = F2(
 	});
 var elm$core$Dict$RBEmpty_elm_builtin = {$: -2};
 var elm$core$Dict$empty = elm$core$Dict$RBEmpty_elm_builtin;
-var elm$core$Task$succeed = _Scheduler_succeed;
 var elm$time$Time$State = F2(
 	function (taggers, processes) {
-		return {ax: processes, aH: taggers};
+		return {ay: processes, aI: taggers};
 	});
 var elm$time$Time$init = elm$core$Task$succeed(
 	A2(elm$time$Time$State, elm$core$Dict$empty, elm$core$Dict$empty));
@@ -5092,7 +5252,6 @@ var elm$core$Dict$merge = F6(
 			leftovers);
 	});
 var elm$core$Process$kill = _Scheduler_kill;
-var elm$core$Task$andThen = _Scheduler_andThen;
 var elm$core$Dict$get = F2(
 	function (targetKey, dict) {
 		get:
@@ -5147,17 +5306,6 @@ var elm$time$Time$addMySub = F2(
 	});
 var elm$core$Platform$sendToSelf = _Platform_sendToSelf;
 var elm$core$Process$spawn = _Scheduler_spawn;
-var elm$time$Time$Name = function (a) {
-	return {$: 0, a: a};
-};
-var elm$time$Time$Offset = function (a) {
-	return {$: 1, a: a};
-};
-var elm$time$Time$Zone = F2(
-	function (a, b) {
-		return {$: 0, a: a, b: b};
-	});
-var elm$time$Time$customZone = elm$time$Time$Zone;
 var elm$time$Time$setInterval = _Time_setInterval;
 var elm$time$Time$spawnHelp = F3(
 	function (router, intervals, processes) {
@@ -5183,7 +5331,7 @@ var elm$time$Time$spawnHelp = F3(
 	});
 var elm$time$Time$onEffects = F3(
 	function (router, subs, _n0) {
-		var processes = _n0.ax;
+		var processes = _n0.ay;
 		var rightStep = F3(
 			function (_n6, id, _n7) {
 				var spawns = _n7.a;
@@ -5247,102 +5395,10 @@ var elm$time$Time$onEffects = F3(
 				},
 				killTask));
 	});
-var elm$core$List$foldrHelper = F4(
-	function (fn, acc, ctr, ls) {
-		if (!ls.b) {
-			return acc;
-		} else {
-			var a = ls.a;
-			var r1 = ls.b;
-			if (!r1.b) {
-				return A2(fn, a, acc);
-			} else {
-				var b = r1.a;
-				var r2 = r1.b;
-				if (!r2.b) {
-					return A2(
-						fn,
-						a,
-						A2(fn, b, acc));
-				} else {
-					var c = r2.a;
-					var r3 = r2.b;
-					if (!r3.b) {
-						return A2(
-							fn,
-							a,
-							A2(
-								fn,
-								b,
-								A2(fn, c, acc)));
-					} else {
-						var d = r3.a;
-						var r4 = r3.b;
-						var res = (ctr > 500) ? A3(
-							elm$core$List$foldl,
-							fn,
-							acc,
-							elm$core$List$reverse(r4)) : A4(elm$core$List$foldrHelper, fn, acc, ctr + 1, r4);
-						return A2(
-							fn,
-							a,
-							A2(
-								fn,
-								b,
-								A2(
-									fn,
-									c,
-									A2(fn, d, res))));
-					}
-				}
-			}
-		}
-	});
-var elm$core$List$foldr = F3(
-	function (fn, acc, ls) {
-		return A4(elm$core$List$foldrHelper, fn, acc, 0, ls);
-	});
-var elm$core$List$map = F2(
-	function (f, xs) {
-		return A3(
-			elm$core$List$foldr,
-			F2(
-				function (x, acc) {
-					return A2(
-						elm$core$List$cons,
-						f(x),
-						acc);
-				}),
-			_List_Nil,
-			xs);
-	});
-var elm$core$Platform$sendToApp = _Platform_sendToApp;
-var elm$core$Task$map2 = F3(
-	function (func, taskA, taskB) {
-		return A2(
-			elm$core$Task$andThen,
-			function (a) {
-				return A2(
-					elm$core$Task$andThen,
-					function (b) {
-						return elm$core$Task$succeed(
-							A2(func, a, b));
-					},
-					taskB);
-			},
-			taskA);
-	});
-var elm$core$Task$sequence = function (tasks) {
-	return A3(
-		elm$core$List$foldr,
-		elm$core$Task$map2(elm$core$List$cons),
-		elm$core$Task$succeed(_List_Nil),
-		tasks);
-};
 var elm$time$Time$now = _Time_now(elm$time$Time$millisToPosix);
 var elm$time$Time$onSelfMsg = F3(
 	function (router, interval, state) {
-		var _n0 = A2(elm$core$Dict$get, interval, state.aH);
+		var _n0 = A2(elm$core$Dict$get, interval, state.aI);
 		if (_n0.$ === 1) {
 			return elm$core$Task$succeed(state);
 		} else {
@@ -5393,10 +5449,10 @@ var author$project$Main$subscriptions = function (_n0) {
 };
 var author$project$Discussion$Message = F4(
 	function (user, timestamp, topic, body) {
-		return {aL: body, a0: timestamp, a2: topic, a5: user};
+		return {aM: body, a1: timestamp, a3: topic, a6: user};
 	});
 var author$project$Discussion$User = function (username) {
-	return {a6: username};
+	return {a7: username};
 };
 var author$project$RageGuy$RageUp = function (a) {
 	return {$: 1, a: a};
@@ -5824,8 +5880,8 @@ var author$project$RageGuy$update = F2(
 			var targetMood = A2(author$project$RageGuy$angerToMood, model.T, model.O);
 			var newModel = function () {
 				if (model.N) {
-					if (A2(author$project$RageGuy$isMoodBefore, model.aT, targetMood)) {
-						var _n1 = A2(author$project$RageGuy$maybeMoodTransitionFrameAfter, model.y, model.aT);
+					if (A2(author$project$RageGuy$isMoodBefore, model.aU, targetMood)) {
+						var _n1 = A2(author$project$RageGuy$maybeMoodTransitionFrameAfter, model.y, model.aU);
 						if (!_n1.$) {
 							var nextFrame = _n1.a;
 							return _Utils_update(
@@ -5838,19 +5894,19 @@ var author$project$RageGuy$update = F2(
 									o: 0,
 									N: false,
 									y: 0,
-									aT: author$project$RageGuy$nextMood(model.aT)
+									aU: author$project$RageGuy$nextMood(model.aU)
 								});
 						}
 					} else {
 						return model;
 					}
 				} else {
-					if (_Utils_eq(model.aT, targetMood)) {
+					if (_Utils_eq(model.aU, targetMood)) {
 						return _Utils_update(
 							model,
 							{
 								o: model.o + 1,
-								y: A2(author$project$RageGuy$relativeFrameForStaticMood, model.o, model.aT)
+								y: A2(author$project$RageGuy$relativeFrameForStaticMood, model.o, model.aU)
 							});
 					} else {
 						return _Utils_update(
@@ -6004,151 +6060,152 @@ var author$project$SwearWords$removeDiacritics = function (input) {
 };
 var author$project$Czech$words = _List_fromArray(
 	[
-		_Utils_Tuple2('asran', 0.1),
-		_Utils_Tuple2('blb', 0.1),
-		_Utils_Tuple2('buzn', 0.1),
-		_Utils_Tuple2('buzer', 0.1),
-		_Utils_Tuple2('čubk', 0.1),
-		_Utils_Tuple2('čurák', 0.1),
-		_Utils_Tuple2('debil', 0.1),
-		_Utils_Tuple2('demen', 0.1),
-		_Utils_Tuple2('děvk', 0.1),
-		_Utils_Tuple2('dylin', 0.1),
-		_Utils_Tuple2('feťák', 0.1),
-		_Utils_Tuple2('hajzl', 0.1),
-		_Utils_Tuple2('hovad', 0.1),
-		_Utils_Tuple2('hovn', 0.1),
-		_Utils_Tuple2('chcan', 0.1),
-		_Utils_Tuple2('chcat', 0.1),
-		_Utils_Tuple2('chčij', 0.1),
-		_Utils_Tuple2('čurák', 0.1),
-		_Utils_Tuple2('idiot', 0.1),
-		_Utils_Tuple2('jeb', 0.1),
-		_Utils_Tuple2('kedr', 0.1),
-		_Utils_Tuple2('kokot', 0.1),
-		_Utils_Tuple2('koz', 0.1),
-		_Utils_Tuple2('kráv', 0.1),
-		_Utils_Tuple2('kretén', 0.1),
-		_Utils_Tuple2('kripl', 0.1),
-		_Utils_Tuple2('ksicht', 0.1),
-		_Utils_Tuple2('kund', 0.1),
-		_Utils_Tuple2('kurv', 0.1),
-		_Utils_Tuple2('kuřbuřt', 0.1),
-		_Utils_Tuple2('mrd', 0.1),
-		_Utils_Tuple2('osel', 0.1),
-		_Utils_Tuple2('píč', 0.1),
-		_Utils_Tuple2('pipin', 0.1),
-		_Utils_Tuple2('poděla', 0.1),
-		_Utils_Tuple2('poser', 0.1),
-		_Utils_Tuple2('pošuk', 0.1),
-		_Utils_Tuple2('prd', 0.1),
-		_Utils_Tuple2('prsatic', 0.1),
-		_Utils_Tuple2('smažk', 0.1),
-		_Utils_Tuple2('ser', 0.1),
-		_Utils_Tuple2('srač', 0.1),
-		_Utils_Tuple2('srát', 0.1),
-		_Utils_Tuple2('šoust', 0.1),
-		_Utils_Tuple2('šuk', 0.1),
-		_Utils_Tuple2('úchyl', 0.1),
-		_Utils_Tuple2('úřední', 0.1),
-		_Utils_Tuple2('úřad', 0.1),
-		_Utils_Tuple2('vůl', 0.1),
-		_Utils_Tuple2('vol', 0.1),
-		_Utils_Tuple2('zmrd', 0.1),
-		_Utils_Tuple2('zoofil', 0.1)
+		_Utils_Tuple2('asran', 0.2),
+		_Utils_Tuple2('blb', 0.2),
+		_Utils_Tuple2('buzn', 0.2),
+		_Utils_Tuple2('buzer', 0.2),
+		_Utils_Tuple2('čubk', 0.2),
+		_Utils_Tuple2('čurák', 0.2),
+		_Utils_Tuple2('debil', 0.2),
+		_Utils_Tuple2('demen', 0.2),
+		_Utils_Tuple2('děvk', 0.2),
+		_Utils_Tuple2('dylin', 0.2),
+		_Utils_Tuple2('feťák', 0.2),
+		_Utils_Tuple2('hajzl', 0.2),
+		_Utils_Tuple2('hovad', 0.2),
+		_Utils_Tuple2('hovn', 0.2),
+		_Utils_Tuple2('chcan', 0.2),
+		_Utils_Tuple2('chcat', 0.2),
+		_Utils_Tuple2('chčij', 0.2),
+		_Utils_Tuple2('čurák', 0.2),
+		_Utils_Tuple2('idiot', 0.2),
+		_Utils_Tuple2('jeb', 0.2),
+		_Utils_Tuple2('kedr', 0.2),
+		_Utils_Tuple2('kokot', 0.2),
+		_Utils_Tuple2('koz', 0.2),
+		_Utils_Tuple2('kráv', 0.2),
+		_Utils_Tuple2('kretén', 0.2),
+		_Utils_Tuple2('kripl', 0.2),
+		_Utils_Tuple2('ksicht', 0.2),
+		_Utils_Tuple2('kund', 0.2),
+		_Utils_Tuple2('kurv', 0.2),
+		_Utils_Tuple2('kuřbuřt', 0.2),
+		_Utils_Tuple2('mrd', 0.2),
+		_Utils_Tuple2('osel', 0.2),
+		_Utils_Tuple2('píč', 0.2),
+		_Utils_Tuple2('pipin', 0.2),
+		_Utils_Tuple2('poděla', 0.2),
+		_Utils_Tuple2('poser', 0.2),
+		_Utils_Tuple2('pošuk', 0.2),
+		_Utils_Tuple2('prd', 0.2),
+		_Utils_Tuple2('prsatic', 0.2),
+		_Utils_Tuple2('smažk', 0.2),
+		_Utils_Tuple2('ser', 0.2),
+		_Utils_Tuple2('srač', 0.2),
+		_Utils_Tuple2('srát', 0.2),
+		_Utils_Tuple2('šoust', 0.2),
+		_Utils_Tuple2('šuk', 0.2),
+		_Utils_Tuple2('úchyl', 0.2),
+		_Utils_Tuple2('úřední', 0.2),
+		_Utils_Tuple2('úřad', 0.2),
+		_Utils_Tuple2('vůl', 0.2),
+		_Utils_Tuple2('vol', 0.2),
+		_Utils_Tuple2('zmrd', 0.2),
+		_Utils_Tuple2('zoofil', 0.2)
 	]);
 var author$project$English$words = _List_fromArray(
 	[
-		_Utils_Tuple2('anal', 0.1),
-		_Utils_Tuple2('anus', 0.1),
-		_Utils_Tuple2('arse', 0.1),
-		_Utils_Tuple2('ass', 0.1),
-		_Utils_Tuple2('asses', 0.1),
-		_Utils_Tuple2('assfuck', 0.1),
-		_Utils_Tuple2('asshole', 0.1),
-		_Utils_Tuple2('assholes', 0.1),
-		_Utils_Tuple2('asswhole', 0.1),
-		_Utils_Tuple2('balls', 0.1),
-		_Utils_Tuple2('ballsack', 0.1),
-		_Utils_Tuple2('bastard', 0.1),
-		_Utils_Tuple2('beastial', 0.1),
-		_Utils_Tuple2('biatch', 0.1),
-		_Utils_Tuple2('bitch', 0.1),
-		_Utils_Tuple2('bloody', 0.1),
-		_Utils_Tuple2('blowjob', 0.1),
-		_Utils_Tuple2('bollock', 0.1),
-		_Utils_Tuple2('boner', 0.1),
-		_Utils_Tuple2('boobs', 0.1),
-		_Utils_Tuple2('butt', 0.1),
-		_Utils_Tuple2('butthole', 0.1),
-		_Utils_Tuple2('cant', 0.1),
-		_Utils_Tuple2('cock', 0.1),
-		_Utils_Tuple2('cockface', 0.1),
-		_Utils_Tuple2('cockhead', 0.1),
-		_Utils_Tuple2('cockmunch', 0.1),
-		_Utils_Tuple2('cockmuncher', 0.1),
-		_Utils_Tuple2('cocksucker', 0.1),
-		_Utils_Tuple2('cocksucking', 0.1),
-		_Utils_Tuple2('cum', 0.1),
-		_Utils_Tuple2('cumshot', 0.1),
-		_Utils_Tuple2('cunt', 0.1),
-		_Utils_Tuple2('cuntlicker', 0.1),
-		_Utils_Tuple2('damn', 0.1),
-		_Utils_Tuple2('dammit', 0.1),
-		_Utils_Tuple2('dick', 0.1),
-		_Utils_Tuple2('dickhead', 0.1),
-		_Utils_Tuple2('die', 0.2),
-		_Utils_Tuple2('dildo', 0.1),
-		_Utils_Tuple2('dink', 0.1),
-		_Utils_Tuple2('dyke', 0.1),
-		_Utils_Tuple2('fag', 0.1),
-		_Utils_Tuple2('faggot', 0.1),
-		_Utils_Tuple2('fanny', 0.1),
-		_Utils_Tuple2('fistfuck', 0.1),
-		_Utils_Tuple2('fffuuu', 0.3),
-		_Utils_Tuple2('ffffffuuuuuuuuuu', 0.2),
-		_Utils_Tuple2('fuck', 0.1),
-		_Utils_Tuple2('fucker', 0.1),
-		_Utils_Tuple2('fuckhead', 0.1),
-		_Utils_Tuple2('fuckin', 0.1),
-		_Utils_Tuple2('gangbang', 0.1),
-		_Utils_Tuple2('gay', 0.1),
-		_Utils_Tuple2('gaylord', 0.1),
-		_Utils_Tuple2('gaysex', 0.1),
-		_Utils_Tuple2('goddamn', 0.1),
-		_Utils_Tuple2('hell', 0.1),
-		_Utils_Tuple2('homo', 0.1),
-		_Utils_Tuple2('hate', 0.1),
-		_Utils_Tuple2('idiot', 0.1),
-		_Utils_Tuple2('jerk', 0.1),
-		_Utils_Tuple2('kill', 0.2),
-		_Utils_Tuple2('mofo', 0.1),
-		_Utils_Tuple2('mothafuck', 0.1),
-		_Utils_Tuple2('motherfuck', 0.1),
-		_Utils_Tuple2('moron', 0.1),
+		_Utils_Tuple2('anal', 0.2),
+		_Utils_Tuple2('anus', 0.2),
+		_Utils_Tuple2('arse', 0.2),
+		_Utils_Tuple2('ass', 0.2),
+		_Utils_Tuple2('asses', 0.2),
+		_Utils_Tuple2('assfuck', 0.2),
+		_Utils_Tuple2('asshole', 0.2),
+		_Utils_Tuple2('assholes', 0.2),
+		_Utils_Tuple2('asswhole', 0.2),
+		_Utils_Tuple2('balls', 0.2),
+		_Utils_Tuple2('ballsack', 0.2),
+		_Utils_Tuple2('bastard', 0.2),
+		_Utils_Tuple2('beastial', 0.2),
+		_Utils_Tuple2('biatch', 0.2),
+		_Utils_Tuple2('bitch', 0.2),
+		_Utils_Tuple2('bloody', 0.2),
+		_Utils_Tuple2('blowjob', 0.2),
+		_Utils_Tuple2('bollock', 0.2),
+		_Utils_Tuple2('boner', 0.2),
+		_Utils_Tuple2('boobs', 0.2),
+		_Utils_Tuple2('butt', 0.2),
+		_Utils_Tuple2('butthole', 0.2),
+		_Utils_Tuple2('cant', 0.2),
+		_Utils_Tuple2('cock', 0.2),
+		_Utils_Tuple2('cockface', 0.2),
+		_Utils_Tuple2('cockhead', 0.2),
+		_Utils_Tuple2('cockmunch', 0.2),
+		_Utils_Tuple2('cockmuncher', 0.2),
+		_Utils_Tuple2('cocksucker', 0.2),
+		_Utils_Tuple2('cocksucking', 0.2),
+		_Utils_Tuple2('cum', 0.2),
+		_Utils_Tuple2('cumshot', 0.2),
+		_Utils_Tuple2('cunt', 0.2),
+		_Utils_Tuple2('cuntlicker', 0.2),
+		_Utils_Tuple2('damn', 0.2),
+		_Utils_Tuple2('dammit', 0.2),
+		_Utils_Tuple2('dick', 0.2),
+		_Utils_Tuple2('dickhead', 0.2),
+		_Utils_Tuple2('die', 0.4),
+		_Utils_Tuple2('dildo', 0.2),
+		_Utils_Tuple2('dink', 0.2),
+		_Utils_Tuple2('dirty', 0.2),
+		_Utils_Tuple2('dyke', 0.2),
+		_Utils_Tuple2('fag', 0.2),
+		_Utils_Tuple2('faggot', 0.2),
+		_Utils_Tuple2('fanny', 0.2),
+		_Utils_Tuple2('fistfuck', 0.2),
+		_Utils_Tuple2('fffuuu', 0.4),
+		_Utils_Tuple2('ffffffuuuuuuuuuu', 0.4),
+		_Utils_Tuple2('fuck', 0.2),
+		_Utils_Tuple2('fucker', 0.2),
+		_Utils_Tuple2('fuckhead', 0.2),
+		_Utils_Tuple2('fuckin', 0.2),
+		_Utils_Tuple2('gangbang', 0.2),
+		_Utils_Tuple2('gay', 0.2),
+		_Utils_Tuple2('gaylord', 0.2),
+		_Utils_Tuple2('gaysex', 0.2),
+		_Utils_Tuple2('goddamn', 0.2),
+		_Utils_Tuple2('hell', 0.2),
+		_Utils_Tuple2('homo', 0.2),
+		_Utils_Tuple2('hate', 0.2),
+		_Utils_Tuple2('idiot', 0.2),
+		_Utils_Tuple2('jerk', 0.2),
+		_Utils_Tuple2('kill', 0.4),
+		_Utils_Tuple2('mofo', 0.2),
+		_Utils_Tuple2('mothafuck', 0.2),
+		_Utils_Tuple2('motherfuck', 0.2),
+		_Utils_Tuple2('moron', 0.2),
 		_Utils_Tuple2('no', 5.0e-2),
-		_Utils_Tuple2('piss', 0.1),
-		_Utils_Tuple2('pussy', 0.1),
-		_Utils_Tuple2('rage', 0.1),
-		_Utils_Tuple2('rectum', 0.1),
-		_Utils_Tuple2('retard', 0.1),
-		_Utils_Tuple2('rimjaw', 0.1),
-		_Utils_Tuple2('rimming', 0.1),
-		_Utils_Tuple2('rimjob', 0.1),
-		_Utils_Tuple2('screw', 0.1),
-		_Utils_Tuple2('shag', 0.1),
-		_Utils_Tuple2('shit', 0.1),
-		_Utils_Tuple2('shitdick', 0.1),
-		_Utils_Tuple2('shithead', 0.1),
-		_Utils_Tuple2('skank', 0.1),
-		_Utils_Tuple2('slut', 0.1),
-		_Utils_Tuple2('smegma', 0.1),
-		_Utils_Tuple2('smut', 0.1),
-		_Utils_Tuple2('snatch', 0.1),
-		_Utils_Tuple2('spac', 0.1),
-		_Utils_Tuple2('spunk', 0.1),
-		_Utils_Tuple2('wank', 0.1),
-		_Utils_Tuple2('whore', 0.1)
+		_Utils_Tuple2('piss', 0.2),
+		_Utils_Tuple2('pussy', 0.2),
+		_Utils_Tuple2('rage', 0.2),
+		_Utils_Tuple2('rectum', 0.2),
+		_Utils_Tuple2('retard', 0.2),
+		_Utils_Tuple2('rimjaw', 0.2),
+		_Utils_Tuple2('rimming', 0.2),
+		_Utils_Tuple2('rimjob', 0.2),
+		_Utils_Tuple2('screw', 0.2),
+		_Utils_Tuple2('shag', 0.2),
+		_Utils_Tuple2('shit', 0.2),
+		_Utils_Tuple2('shitdick', 0.2),
+		_Utils_Tuple2('shithead', 0.2),
+		_Utils_Tuple2('skank', 0.2),
+		_Utils_Tuple2('slut', 0.2),
+		_Utils_Tuple2('smegma', 0.2),
+		_Utils_Tuple2('smut', 0.2),
+		_Utils_Tuple2('snatch', 0.2),
+		_Utils_Tuple2('spac', 0.2),
+		_Utils_Tuple2('spunk', 0.2),
+		_Utils_Tuple2('wank', 0.2),
+		_Utils_Tuple2('whore', 0.2)
 	]);
 var author$project$SwearWords$words = elm$core$List$concat(
 	_List_fromArray(
@@ -6242,7 +6299,7 @@ var author$project$Main$updatedModelRage = F5(
 				2.0e-3 * (elm$core$String$length(newString) - elm$core$String$length(oldString)));
 			var severityOfMaybeSwearWordAdded = A2(author$project$SwearWords$severityOfMaybeSwearWordAdded, oldString, newString);
 			var addedSeverity = severityOfMaybeSwearWordAdded + severityOfMaybeCharsAdded;
-			var angerFlash = A2(elm$core$Basics$min, 5.0, (50 * addedSeverity) + model.h);
+			var angerFlash = A2(elm$core$Basics$min, 4.0, (5 * addedSeverity) + model.h);
 			var rageGuy = A2(
 				author$project$RageGuy$update,
 				author$project$RageGuy$RageUp(addedSeverity),
@@ -6257,6 +6314,8 @@ var author$project$Main$updatedModelRage = F5(
 		}
 	});
 var author$project$RageGuy$Tick = {$: 0};
+var elm$core$Platform$Cmd$batch = _Platform_batch;
+var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
 var elm$core$String$isEmpty = function (string) {
 	return string === '';
 };
@@ -6268,11 +6327,18 @@ var author$project$Main$update = F2(
 			case 6:
 				var time = msg.a;
 				var rageGuy = A2(author$project$RageGuy$update, author$project$RageGuy$Tick, model.e);
-				var angerFlash = model.h - 0.2;
+				var angerFlash = A2(elm$core$Basics$max, 0.0, model.h - 0.2);
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{h: angerFlash, e: rageGuy, U: time}),
+					elm$core$Platform$Cmd$none);
+			case 7:
+				var newZone = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{_: newZone}),
 					elm$core$Platform$Cmd$none);
 			case 1:
 				var rageGuyMsg = msg.a;
@@ -6289,7 +6355,7 @@ var author$project$Main$update = F2(
 				var newModel = function () {
 					if ((rageGuy.T >= 1.0) && ((!rageGuy.O) && (!elm$core$String$isEmpty(model.s)))) {
 						var user = author$project$Discussion$User(model.Q);
-						var newMessage = A4(author$project$Discussion$Message, user, model.U, model.a2, model.s);
+						var newMessage = A4(author$project$Discussion$Message, user, model.U, model.a3, model.s);
 						var newDiscussion = A2(elm$core$List$cons, newMessage, model.M);
 						return _Utils_update(
 							model,
@@ -6299,7 +6365,7 @@ var author$project$Main$update = F2(
 								e: _Utils_update(
 									rageGuy,
 									{O: true}),
-								a2: ''
+								a3: ''
 							});
 					} else {
 						if (rageGuy.O) {
@@ -6309,7 +6375,7 @@ var author$project$Main$update = F2(
 									h: 5.0,
 									e: _Utils_update(
 										rageGuy,
-										{O: false, aT: 0, T: 0.0})
+										{O: false, aU: 0, T: 0.0})
 								});
 						} else {
 							return _Utils_update(
@@ -6351,13 +6417,13 @@ var author$project$Main$update = F2(
 						model,
 						100,
 						function ($) {
-							return $.a2;
+							return $.a3;
 						},
 						F2(
 							function (string, m) {
 								return _Utils_update(
 									m,
-									{a2: string});
+									{a3: string});
 							}),
 						topic),
 					elm$core$Platform$Cmd$none);
@@ -6619,7 +6685,7 @@ var author$project$RageGuy$view = function (model) {
 					}),
 				texts));
 	};
-	var index = author$project$RageGuy$startFrame(model.aT) + model.y;
+	var index = author$project$RageGuy$startFrame(model.aU) + model.y;
 	var leftSpritePosition = elm$core$String$fromInt((-author$project$RageGuy$rageGuyImageWidth) * index) + 'px';
 	var height = 360;
 	var fffuuuuTextCut = function (limit) {
@@ -6636,7 +6702,7 @@ var author$project$RageGuy$view = function (model) {
 			},
 			A2(elm$core$List$range, 0, numberOfFFFRows * 2));
 	};
-	var fffuuuTextDivs = (model.aT === 5) ? textDivs(
+	var fffuuuTextDivs = (model.aU === 5) ? textDivs(
 		fffuuuuTextCut(model.o * 3)) : _List_Nil;
 	return A2(
 		elm$html$Html$div,
@@ -6673,15 +6739,15 @@ var author$project$Utils$toHex = function (n) {
 };
 var author$project$Utils$colorToHex = function (cl) {
 	var _n0 = cl;
-	var red = _n0.af;
-	var green = _n0.ab;
-	var blue = _n0.aa;
-	var alpha = _n0._;
+	var red = _n0.ag;
+	var green = _n0.ac;
+	var blue = _n0.ab;
+	var alpha = _n0.aa;
 	return '#' + (author$project$Utils$toHex(red) + (author$project$Utils$toHex(green) + author$project$Utils$toHex(blue)));
 };
 var author$project$Utils$rgb = F3(
 	function (red, green, blue) {
-		return {_: 255, aa: blue, ab: green, af: red};
+		return {aa: 255, ab: blue, ac: green, ag: red};
 	});
 var elm$core$Basics$cos = _Basics_cos;
 var elm$core$Basics$round = _Basics_round;
@@ -6795,8 +6861,8 @@ var elm$time$Time$toAdjustedMinutesHelp = F3(
 			} else {
 				var era = eras.a;
 				var olderEras = eras.b;
-				if (_Utils_cmp(era.ah, posixMinutes) < 0) {
-					return posixMinutes + era.as;
+				if (_Utils_cmp(era.ai, posixMinutes) < 0) {
+					return posixMinutes + era.at;
 				} else {
 					var $temp$defaultOffset = defaultOffset,
 						$temp$posixMinutes = posixMinutes,
@@ -6822,6 +6888,26 @@ var elm$time$Time$toAdjustedMinutes = F2(
 				60000),
 			eras);
 	});
+var elm$time$Time$toCivil = function (minutes) {
+	var rawDay = A2(elm$time$Time$flooredDiv, minutes, 60 * 24) + 719468;
+	var era = (((rawDay >= 0) ? rawDay : (rawDay - 146096)) / 146097) | 0;
+	var dayOfEra = rawDay - (era * 146097);
+	var yearOfEra = ((((dayOfEra - ((dayOfEra / 1460) | 0)) + ((dayOfEra / 36524) | 0)) - ((dayOfEra / 146096) | 0)) / 365) | 0;
+	var dayOfYear = dayOfEra - (((365 * yearOfEra) + ((yearOfEra / 4) | 0)) - ((yearOfEra / 100) | 0));
+	var mp = (((5 * dayOfYear) + 2) / 153) | 0;
+	var month = mp + ((mp < 10) ? 3 : (-9));
+	var year = yearOfEra + (era * 400);
+	return {
+		am: (dayOfYear - ((((153 * mp) + 2) / 5) | 0)) + 1,
+		as: month,
+		aK: year + ((month <= 2) ? 1 : 0)
+	};
+};
+var elm$time$Time$toDay = F2(
+	function (zone, time) {
+		return elm$time$Time$toCivil(
+			A2(elm$time$Time$toAdjustedMinutes, zone, time)).am;
+	});
 var elm$time$Time$toHour = F2(
 	function (zone, time) {
 		return A2(
@@ -6839,6 +6925,49 @@ var elm$time$Time$toMinute = F2(
 			60,
 			A2(elm$time$Time$toAdjustedMinutes, zone, time));
 	});
+var elm$time$Time$Apr = 3;
+var elm$time$Time$Aug = 7;
+var elm$time$Time$Dec = 11;
+var elm$time$Time$Feb = 1;
+var elm$time$Time$Jan = 0;
+var elm$time$Time$Jul = 6;
+var elm$time$Time$Jun = 5;
+var elm$time$Time$Mar = 2;
+var elm$time$Time$May = 4;
+var elm$time$Time$Nov = 10;
+var elm$time$Time$Oct = 9;
+var elm$time$Time$Sep = 8;
+var elm$time$Time$toMonth = F2(
+	function (zone, time) {
+		var _n0 = elm$time$Time$toCivil(
+			A2(elm$time$Time$toAdjustedMinutes, zone, time)).as;
+		switch (_n0) {
+			case 1:
+				return 0;
+			case 2:
+				return 1;
+			case 3:
+				return 2;
+			case 4:
+				return 3;
+			case 5:
+				return 4;
+			case 6:
+				return 5;
+			case 7:
+				return 6;
+			case 8:
+				return 7;
+			case 9:
+				return 8;
+			case 10:
+				return 9;
+			case 11:
+				return 10;
+			default:
+				return 11;
+		}
+	});
 var elm$time$Time$toSecond = F2(
 	function (_n0, time) {
 		return A2(
@@ -6849,8 +6978,15 @@ var elm$time$Time$toSecond = F2(
 				elm$time$Time$posixToMillis(time),
 				1000));
 	});
-var elm$time$Time$utc = A2(elm$time$Time$Zone, 0, _List_Nil);
+var elm$time$Time$toYear = F2(
+	function (zone, time) {
+		return elm$time$Time$toCivil(
+			A2(elm$time$Time$toAdjustedMinutes, zone, time)).aK;
+	});
 var author$project$Main$view = function (model) {
+	var zeroPad2 = function (x) {
+		return (x < 10) ? ('0' + elm$core$String$fromInt(x)) : elm$core$String$fromInt(x);
+	};
 	var userNameInput = A2(
 		elm$html$Html$input,
 		_List_fromArray(
@@ -6867,7 +7003,7 @@ var author$project$Main$view = function (model) {
 			[
 				elm$html$Html$Attributes$type_('Text'),
 				elm$html$Html$Attributes$placeholder('Topic'),
-				elm$html$Html$Attributes$value(model.a2),
+				elm$html$Html$Attributes$value(model.a3),
 				elm$html$Html$Events$onInput(author$project$Main$TopicUpdate)
 			]),
 		_List_Nil);
@@ -6897,6 +7033,34 @@ var author$project$Main$view = function (model) {
 				author$project$Main$RageGuyMsg,
 				author$project$RageGuy$view(model.e))
 			]));
+	var monthToString = function (month) {
+		switch (month) {
+			case 0:
+				return 'Jan';
+			case 1:
+				return 'Feb';
+			case 2:
+				return 'Mar';
+			case 3:
+				return 'Apr';
+			case 4:
+				return 'May';
+			case 5:
+				return 'Jun';
+			case 6:
+				return 'Jul';
+			case 7:
+				return 'Aug';
+			case 8:
+				return 'Sep';
+			case 9:
+				return 'Oct';
+			case 10:
+				return 'Nov';
+			default:
+				return 'Dec';
+		}
+	};
 	var messageInput = A2(
 		elm$html$Html$textarea,
 		_List_fromArray(
@@ -6907,12 +7071,16 @@ var author$project$Main$view = function (model) {
 				elm$html$Html$Events$onInput(author$project$Main$MessageUpdate)
 			]),
 		_List_Nil);
-	var formatTime = function (time) {
-		return elm$core$String$fromInt(
-			A2(elm$time$Time$toHour, elm$time$Time$utc, time)) + (':' + (elm$core$String$fromInt(
-			A2(elm$time$Time$toMinute, elm$time$Time$utc, time)) + (':' + (elm$core$String$fromInt(
-			A2(elm$time$Time$toSecond, elm$time$Time$utc, time)) + ' (UTC)'))));
-	};
+	var formatTime = F2(
+		function (zone, time) {
+			return elm$core$String$fromInt(
+				A2(elm$time$Time$toDay, zone, time)) + (' ' + (monthToString(
+				A2(elm$time$Time$toMonth, zone, time)) + (' ' + (elm$core$String$fromInt(
+				A2(elm$time$Time$toYear, zone, time)) + (' ' + (zeroPad2(
+				A2(elm$time$Time$toHour, zone, time)) + (':' + (zeroPad2(
+				A2(elm$time$Time$toMinute, zone, time)) + (':' + zeroPad2(
+				A2(elm$time$Time$toSecond, zone, time)))))))))));
+		});
 	var viewMessage = function (message) {
 		return A2(
 			elm$html$Html$div,
@@ -6927,7 +7095,7 @@ var author$project$Main$view = function (model) {
 					_List_Nil,
 					_List_fromArray(
 						[
-							elm$html$Html$text(message.a5.a6)
+							elm$html$Html$text(message.a6.a7)
 						])),
 					elm$html$Html$text(' '),
 					A2(
@@ -6936,7 +7104,7 @@ var author$project$Main$view = function (model) {
 					_List_fromArray(
 						[
 							elm$html$Html$text(
-							formatTime(message.a0))
+							A2(formatTime, model._, message.a1))
 						])),
 					elm$html$Html$text(' '),
 					A2(
@@ -6944,14 +7112,14 @@ var author$project$Main$view = function (model) {
 					_List_Nil,
 					_List_fromArray(
 						[
-							elm$html$Html$text(message.a2)
+							elm$html$Html$text(message.a3)
 						])),
 					A2(
 					elm$html$Html$p,
 					_List_Nil,
 					_List_fromArray(
 						[
-							elm$html$Html$text(message.aL)
+							elm$html$Html$text(message.aM)
 						]))
 				]));
 	};
@@ -7003,7 +7171,7 @@ var author$project$Main$view = function (model) {
 			function (a, b, c, d, p) {
 				return (p < 0.0) ? a : ((p < 1.0) ? A3(interpolate, a, b, p) : ((p < 2.0) ? A3(interpolate, b, c, p - 1.0) : ((p < 3.0) ? A3(interpolate, c, d, p - 2.0) : d)));
 			});
-		var anger = (model.e.T < 1.0) ? (model.h * 0.1) : ((!model.e.O) ? (((1.5 + elm$core$Basics$sin(now / 500.0)) + (0.5 * elm$core$Basics$sin(0.3 + (now / 400.0)))) + (0.4 * elm$core$Basics$cos(0.8 + (now / 300.0)))) : (((1.0 + elm$core$Basics$sin(now / 500.0)) + (0.5 * elm$core$Basics$sin(0.3 + (now / 100.0)))) + (0.4 * elm$core$Basics$cos(0.8 + (now / 200.0)))));
+		var anger = (model.e.T < 1.0) ? model.h : ((!model.e.O) ? (((1.5 + elm$core$Basics$sin(now / 500.0)) + (0.5 * elm$core$Basics$sin(0.3 + (now / 400.0)))) + (0.4 * elm$core$Basics$cos(0.8 + (now / 300.0)))) : (((1.0 + elm$core$Basics$sin(now / 500.0)) + (0.5 * elm$core$Basics$sin(0.3 + (now / 100.0)))) + (0.4 * elm$core$Basics$cos(0.8 + (now / 200.0)))));
 		var angerColorComponent = F4(
 			function (a, b, c, d) {
 				return A5(interpolate3, a, b, c, d, anger);
@@ -7078,56 +7246,6 @@ var elm$core$Basics$never = function (_n0) {
 		continue never;
 	}
 };
-var elm$core$Task$Perform = elm$core$Basics$identity;
-var elm$core$Task$init = elm$core$Task$succeed(0);
-var elm$core$Task$map = F2(
-	function (func, taskA) {
-		return A2(
-			elm$core$Task$andThen,
-			function (a) {
-				return elm$core$Task$succeed(
-					func(a));
-			},
-			taskA);
-	});
-var elm$core$Task$spawnCmd = F2(
-	function (router, _n0) {
-		var task = _n0;
-		return _Scheduler_spawn(
-			A2(
-				elm$core$Task$andThen,
-				elm$core$Platform$sendToApp(router),
-				task));
-	});
-var elm$core$Task$onEffects = F3(
-	function (router, commands, state) {
-		return A2(
-			elm$core$Task$map,
-			function (_n0) {
-				return 0;
-			},
-			elm$core$Task$sequence(
-				A2(
-					elm$core$List$map,
-					elm$core$Task$spawnCmd(router),
-					commands)));
-	});
-var elm$core$Task$onSelfMsg = F3(
-	function (_n0, _n1, _n2) {
-		return elm$core$Task$succeed(0);
-	});
-var elm$core$Task$cmdMap = F2(
-	function (tagger, _n0) {
-		var task = _n0;
-		return A2(elm$core$Task$map, tagger, task);
-	});
-_Platform_effectManagers['Task'] = _Platform_createManager(elm$core$Task$init, elm$core$Task$onEffects, elm$core$Task$onSelfMsg, elm$core$Task$cmdMap);
-var elm$core$Task$command = _Platform_leaf('Task');
-var elm$core$Task$perform = F2(
-	function (toMessage, task) {
-		return elm$core$Task$command(
-			A2(elm$core$Task$map, toMessage, task));
-	});
 var elm$core$String$slice = _String_slice;
 var elm$core$String$dropLeft = F2(
 	function (n, string) {
@@ -7148,7 +7266,7 @@ var elm$core$String$left = F2(
 var elm$core$String$toInt = _String_toInt;
 var elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {ao: fragment, ap: host, at: path, av: port_, ay: protocol, az: query};
+		return {ap: fragment, aq: host, au: path, aw: port_, az: protocol, aA: query};
 	});
 var elm$url$Url$chompBeforePath = F5(
 	function (protocol, path, params, frag, str) {
@@ -7254,6 +7372,6 @@ var elm$url$Url$fromString = function (str) {
 };
 var elm$browser$Browser$element = _Browser_element;
 var author$project$Main$main = elm$browser$Browser$element(
-	{aS: author$project$Main$init, a$: author$project$Main$subscriptions, a3: author$project$Main$update, a7: author$project$Main$view});
+	{aT: author$project$Main$init, a0: author$project$Main$subscriptions, a4: author$project$Main$update, a8: author$project$Main$view});
 _Platform_export({'Main':{'init':author$project$Main$main(
 	elm$json$Json$Decode$succeed(0))(0)}});}(this));

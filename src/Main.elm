@@ -8,6 +8,7 @@ import Html.Events exposing (onInput)
 import RageGuy
 import String
 import SwearWords
+import Task
 import Time
 import Utils
 
@@ -33,6 +34,7 @@ type alias Model =
     , angerFlash : Float
     , rageGuy : RageGuy.Model
     , discussion : List Discussion.Message
+    , zone : Time.Zone
     , time : Time.Posix
     }
 
@@ -45,12 +47,13 @@ initialModel =
     , rageGuy = RageGuy.initialModel
     , discussion = []
     , time = Time.millisToPosix 0
+    , zone = Time.utc
     }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( initialModel, Cmd.none )
+    ( initialModel, Task.perform AdjustTimeZone Time.here )
 
 
 type Msg
@@ -61,6 +64,7 @@ type Msg
     | TopicUpdate String
     | MessageUpdate String
     | Tick Time.Posix
+    | AdjustTimeZone Time.Zone
 
 
 updatedModelRage :
@@ -119,6 +123,9 @@ update msg model =
                     model.angerFlash - 0.2 |> Basics.max 0.0
             in
             ( { model | time = time, rageGuy = rageGuy, angerFlash = angerFlash }, Cmd.none )
+
+        AdjustTimeZone newZone ->
+            ( { model | zone = newZone }, Cmd.none )
 
         RageGuyMsg rageGuyMsg ->
             let
@@ -284,20 +291,70 @@ view model =
                 ]
                 [ Html.map RageGuyMsg (RageGuy.view model.rageGuy) ]
 
-        formatTime : Time.Posix -> String
-        formatTime time =
-            String.fromInt (Time.toHour Time.utc time)
+        zeroPad2 x =
+            if x < 10 then
+                "0" ++ String.fromInt x
+
+            else
+                String.fromInt x
+
+        monthToString month =
+            case month of
+                Time.Jan ->
+                    "Jan"
+
+                Time.Feb ->
+                    "Feb"
+
+                Time.Mar ->
+                    "Mar"
+
+                Time.Apr ->
+                    "Apr"
+
+                Time.May ->
+                    "May"
+
+                Time.Jun ->
+                    "Jun"
+
+                Time.Jul ->
+                    "Jul"
+
+                Time.Aug ->
+                    "Aug"
+
+                Time.Sep ->
+                    "Sep"
+
+                Time.Oct ->
+                    "Oct"
+
+                Time.Nov ->
+                    "Nov"
+
+                Time.Dec ->
+                    "Dec"
+
+        formatTime : Time.Zone -> Time.Posix -> String
+        formatTime zone time =
+            String.fromInt (Time.toDay zone time)
+                ++ " "
+                ++ (Time.toMonth zone time |> monthToString)
+                ++ " "
+                ++ String.fromInt (Time.toYear zone time)
+                ++ " "
+                ++ zeroPad2 (Time.toHour zone time)
                 ++ ":"
-                ++ String.fromInt (Time.toMinute Time.utc time)
+                ++ zeroPad2 (Time.toMinute zone time)
                 ++ ":"
-                ++ String.fromInt (Time.toSecond Time.utc time)
-                ++ " (UTC)"
+                ++ zeroPad2 (Time.toSecond zone time)
 
         viewMessage message =
             div [ A.class "message" ]
                 [ b [] [ text message.user.username ]
                 , text " "
-                , i [] [ text (formatTime message.timestamp) ]
+                , i [] [ text (formatTime model.zone message.timestamp) ]
                 , text " "
                 , b [] [ text message.topic ]
                 , p [] [ text message.body ]
