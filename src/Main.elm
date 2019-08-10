@@ -28,7 +28,7 @@ main =
 
 type alias Model =
     { name : String
-    , subject : String
+    , topic : String
     , message : String
     , angerFlash : Float
     , rageGuy : RageGuy.Model
@@ -39,7 +39,7 @@ type alias Model =
 
 initialModel =
     { name = ""
-    , subject = ""
+    , topic = ""
     , message = ""
     , angerFlash = 0.0
     , rageGuy = RageGuy.initialModel
@@ -56,8 +56,9 @@ init _ =
 type Msg
     = NoOp
     | RageGuyMsg RageGuy.Msg
+    | ClickRageGuy
     | UserUpdate String
-    | SubjectUpdate String
+    | TopicUpdate String
     | MessageUpdate String
     | Tick Time.Posix
 
@@ -85,24 +86,14 @@ updatedModelRage model maxLength stringGetter stringSetter newString =
             addedSeverity =
                 severityOfMaybeSwearWordAdded + severityOfMaybeCharsAdded
 
-            angerFlash_ =
-                15 * addedSeverity + model.angerFlash
-
-            angerFlash__ =
-                if angerFlash_ < 0.5 then
-                    angerFlash_ + 0.3
-
-                else
-                    angerFlash_
-
-            rageGuyUpdateMsg =
-                RageGuy.RageUpButDontFFFUUU addedSeverity
+            angerFlash =
+                (50 * addedSeverity + model.angerFlash) |> Basics.min 5.0
 
             rageGuy =
-                RageGuy.update rageGuyUpdateMsg model.rageGuy
+                RageGuy.update (RageGuy.RageUp addedSeverity) model.rageGuy
 
             model_ =
-                { model | rageGuy = rageGuy, angerFlash = angerFlash__ }
+                { model | rageGuy = rageGuy, angerFlash = angerFlash }
 
             model__ =
                 stringSetter newString model_
@@ -124,30 +115,9 @@ update msg model =
                 rageGuy =
                     RageGuy.update RageGuy.Tick model.rageGuy
 
-                angerFlash =
-                    Basics.max 0.0 (model.angerFlash - 0.2)
-
-                model_ =
-                    { model | rageGuy = rageGuy, angerFlash = angerFlash }
-
-                model__ =
-                    if RageGuy.shouldSendMessage rageGuy then
-                        let
-                            user =
-                                Discussion.User model.name
-
-                            newMessage =
-                                Discussion.Message user time model.subject model.message
-
-                            newDiscussion =
-                                newMessage :: model.discussion
-                        in
-                        { model_ | discussion = newDiscussion }
-
-                    else
-                        model_
+                angerFlash = model.angerFlash - 0.2
             in
-            ( model__, Cmd.none )
+            ( { model | time = time, rageGuy = rageGuy, angerFlash = angerFlash }, Cmd.none )
 
         RageGuyMsg rageGuyMsg ->
             let
@@ -164,13 +134,51 @@ update msg model =
             , Cmd.none
             )
 
+        ClickRageGuy ->
+            let
+                rageGuy =
+                    model.rageGuy
+
+                newModel =
+                    if rageGuy.targetAnger >= 1.0 && not rageGuy.isRaging && not (String.isEmpty model.message) then
+                        -- Start raging, post the message
+                        let
+                            user =
+                                Discussion.User model.name
+
+                            newMessage =
+                                Discussion.Message user model.time model.topic model.message
+
+                            newDiscussion =
+                                newMessage :: model.discussion
+                        in
+                        { model
+                            | topic = ""
+                            , message = ""
+                            , discussion = newDiscussion
+                            , rageGuy = { rageGuy | isRaging = True }
+                        }
+
+                    else if rageGuy.isRaging then
+                        -- Cool down
+                        { model | angerFlash = 5.0, rageGuy = { rageGuy | targetAnger = 0.0, isRaging = False, mood = RageGuy.Neutral } }
+
+                    else
+                        -- Increment anger and flash
+                        { model
+                            | angerFlash = model.angerFlash + 1.0
+                            , rageGuy = RageGuy.update (RageGuy.RageUp 0.05) model.rageGuy
+                        }
+            in
+            ( newModel, Cmd.none )
+
         MessageUpdate message ->
             ( updatedModelRage model 2000 .message (\string m -> { m | message = string }) message
             , Cmd.none
             )
 
-        SubjectUpdate subject ->
-            ( updatedModelRage model 100 .subject (\string m -> { m | subject = string }) subject
+        TopicUpdate topic ->
+            ( updatedModelRage model 100 .topic (\string m -> { m | topic = string }) topic
             , Cmd.none
             )
 
@@ -185,15 +193,53 @@ update msg model =
 view : Model -> Html Msg
 view model =
     let
-        ratioTo255 ratio =
-            round (Basics.max 0 (Basics.min (ratio * 255) 255))
-
         angerColor =
+            let
+                interpolate start end ratio =
+                    round (toFloat start + ratio * toFloat (end - start))
+
+                interpolate3 a b c d p =
+                    if p < 0.0 then
+                        a
+
+                    else if p < 1.0 then
+                        interpolate a b p
+
+                    else if p < 2.0 then
+                        interpolate b c (p - 1.0)
+
+                    else if p < 3.0 then
+                        interpolate c d (p - 2.0)
+
+                    else
+                        d
+
+                now =
+                    toFloat (Time.posixToMillis model.time)
+
+                anger =
+                    if model.rageGuy.targetAnger < 1.0 then
+                        model.angerFlash * 0.1
+
+                    else if not model.rageGuy.isRaging then
+                        -- Click to rage
+                        (1.5 + sin (now / 500.0))
+                            + (0.5 * sin (0.3 + now / 400.0))
+                            + (0.4 * cos (0.8 + now / 300.0))
+
+                    else
+                        (1.0 + sin (now / 500.0))
+                            + (0.5 * sin (0.3 + now / 100.0))
+                            + (0.4 * cos (0.8 + now / 200.0))
+
+                angerColorComponent a b c d =
+                    interpolate3 a b c d anger
+            in
             Utils.colorToHex
                 (Utils.rgb
-                    255
-                    (ratioTo255 (0.98 - model.angerFlash))
-                    (ratioTo255 (0.97 - model.angerFlash))
+                    (angerColorComponent 255 255 192 64)
+                    (angerColorComponent 255 128 64 32)
+                    (angerColorComponent 255 128 64 32)
                 )
 
         fffuuuHeader =
@@ -212,12 +258,12 @@ view model =
                 ]
                 []
 
-        subjectInput =
+        topicInput =
             input
                 [ A.type_ "Text"
                 , A.placeholder "Topic"
-                , A.value model.subject
-                , onInput SubjectUpdate
+                , A.value model.topic
+                , onInput TopicUpdate
                 ]
                 []
 
@@ -252,7 +298,7 @@ view model =
                 , text " "
                 , i [] [ text (formatTime message.timestamp) ]
                 , text " "
-                , b [] [ text message.subject ]
+                , b [] [ text message.topic ]
                 , p [] [ text message.body ]
                 ]
 
@@ -264,13 +310,6 @@ view model =
 
         col html =
             div [ A.class "column" ] html
-
-        clickRageGuyMessage =
-            if String.isEmpty model.message then
-                RageGuyMsg (RageGuy.RageUpButDontFFFUUU 0.05)
-
-            else
-                RageGuyMsg (RageGuy.RageUp 0.05)
     in
     section
         [ A.style "background" angerColor
@@ -283,11 +322,11 @@ view model =
                 [ col
                     [ userNameInput
                     , br [] []
-                    , subjectInput
+                    , topicInput
                     , br [] []
                     , messageInput
                     ]
-                , div [ A.class "column", Html.Events.onClick clickRageGuyMessage ] [ rageGuyView ]
+                , div [ A.class "column", Html.Events.onClick ClickRageGuy ] [ rageGuyView ]
                 ]
             , hr [] []
             , div [] (List.intersperse (hr [] []) <| List.map viewMessage model.discussion)

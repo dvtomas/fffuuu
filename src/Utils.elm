@@ -4,6 +4,7 @@ import Char
 
 type alias Color = {red: Int, green: Int, blue: Int, alpha: Int}
 
+rgb: Int -> Int -> Int -> Color
 rgb red green blue = {red = red, green = green, blue = blue, alpha = 255}
 
 --Converts a color to a hexadecimal string. hexToColor (rgb 255 0 0) -- "#ff0000"

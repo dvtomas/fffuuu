@@ -8,7 +8,7 @@ type alias User = {
 type alias Message = {
       user : User,
       timestamp : Time.Posix,
-      subject : String,
+      topic : String,
       body : String
   }
 

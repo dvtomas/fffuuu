@@ -519,11 +519,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.ah.Q === region.am.Q)
+	if (region.ah.P === region.am.P)
 	{
-		return 'on line ' + region.ah.Q;
+		return 'on line ' + region.ah.P;
 	}
-	return 'on lines ' + region.ah.Q + ' through ' + region.am.Q;
+	return 'on lines ' + region.ah.P + ' through ' + region.am.P;
 }
 
 
@@ -1857,9 +1857,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aT,
+		impl.aS,
 		impl.a3,
-		impl.a0,
+		impl.a$,
 		function() { return function() {} }
 	);
 });
@@ -2742,7 +2742,7 @@ var _VirtualDom_mapEventTuple = F2(function(func, tuple)
 var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
-		G: func(record.G),
+		s: func(record.s),
 		ai: record.ai,
 		ae: record.ae
 	}
@@ -3012,7 +3012,7 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 		// 3 = Custom
 
 		var value = result.a;
-		var message = !tag ? value : tag < 3 ? value.a : value.G;
+		var message = !tag ? value : tag < 3 ? value.a : value.s;
 		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.ai;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
@@ -3962,9 +3962,9 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aT,
+		impl.aS,
 		impl.a3,
-		impl.a0,
+		impl.a$,
 		function(sendToApp, initialModel) {
 			var view = impl.a7;
 			/**/
@@ -3998,11 +3998,11 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aT,
+		impl.aS,
 		impl.a3,
-		impl.a0,
+		impl.a$,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.S && impl.S(sendToApp)
+			var divertHrefToApp = impl.R && impl.R(sendToApp)
 			var view = impl.a7;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
@@ -4011,12 +4011,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.aM);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.aL);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.a2) && (_VirtualDom_doc.title = title = doc.a2);
+				(title !== doc.a1) && (_VirtualDom_doc.title = title = doc.a1);
 			});
 		}
 	);
@@ -4072,7 +4072,7 @@ function _Browser_application(impl)
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		S: function(sendToApp)
+		R: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4098,13 +4098,13 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		aT: function(flags)
+		aS: function(flags)
 		{
-			return A3(impl.aT, flags, _Browser_getUrl(), key);
+			return A3(impl.aS, flags, _Browser_getUrl(), key);
 		},
 		a7: impl.a7,
 		a3: impl.a3,
-		a0: impl.a0
+		a$: impl.a$
 	});
 }
 
@@ -4170,17 +4170,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { aR: 'hidden', N: 'visibilitychange' }
+		? { aQ: 'hidden', L: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { aR: 'mozHidden', N: 'mozvisibilitychange' }
+		? { aQ: 'mozHidden', L: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { aR: 'msHidden', N: 'msvisibilitychange' }
+		? { aQ: 'msHidden', L: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { aR: 'webkitHidden', N: 'webkitvisibilitychange' }
-		: { aR: 'hidden', N: 'visibilitychange' };
+		? { aQ: 'webkitHidden', L: 'webkitvisibilitychange' }
+		: { aQ: 'hidden', L: 'visibilitychange' };
 }
 
 
@@ -4262,11 +4262,11 @@ function _Browser_getViewport()
 {
 	return {
 		aE: _Browser_getScene(),
-		aJ: {
+		aI: {
 			Y: _Browser_window.pageXOffset,
 			Z: _Browser_window.pageYOffset,
-			L: _Browser_doc.documentElement.clientWidth,
-			F: _Browser_doc.documentElement.clientHeight
+			J: _Browser_doc.documentElement.clientWidth,
+			E: _Browser_doc.documentElement.clientHeight
 		}
 	};
 }
@@ -4276,8 +4276,8 @@ function _Browser_getScene()
 	var body = _Browser_doc.body;
 	var elem = _Browser_doc.documentElement;
 	return {
-		L: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-		F: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+		J: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+		E: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
 
@@ -4301,14 +4301,14 @@ function _Browser_getViewportOf(id)
 	{
 		return {
 			aE: {
-				L: node.scrollWidth,
-				F: node.scrollHeight
+				J: node.scrollWidth,
+				E: node.scrollHeight
 			},
-			aJ: {
+			aI: {
 				Y: node.scrollLeft,
 				Z: node.scrollTop,
-				L: node.clientWidth,
-				F: node.clientHeight
+				J: node.clientWidth,
+				E: node.clientHeight
 			}
 		};
 	});
@@ -4339,17 +4339,17 @@ function _Browser_getElement(id)
 		var y = _Browser_window.pageYOffset;
 		return {
 			aE: _Browser_getScene(),
-			aJ: {
+			aI: {
 				Y: x,
 				Z: y,
-				L: _Browser_doc.documentElement.clientWidth,
-				F: _Browser_doc.documentElement.clientHeight
+				J: _Browser_doc.documentElement.clientWidth,
+				E: _Browser_doc.documentElement.clientHeight
 			},
-			aO: {
+			aN: {
 				Y: x + rect.left,
 				Z: y + rect.top,
-				L: rect.width,
-				F: rect.height
+				J: rect.width,
+				E: rect.height
 			}
 		};
 	});
@@ -4386,7 +4386,7 @@ function _Browser_load(url)
 }
 var author$project$RageGuy$Neutral = 0;
 var elm$core$Basics$False = 1;
-var author$project$RageGuy$initialModel = {X: false, p: 0, P: false, z: 0, k: 0, l: 0};
+var author$project$RageGuy$initialModel = {o: 0, N: false, O: false, y: 0, aT: 0, T: 0};
 var elm$core$Basics$EQ = 1;
 var elm$core$Basics$LT = 0;
 var elm$core$Elm$JsArray$foldr = _JsArray_foldr;
@@ -4473,13 +4473,13 @@ var elm$core$Basics$identity = function (x) {
 var elm$time$Time$Posix = elm$core$Basics$identity;
 var elm$time$Time$millisToPosix = elm$core$Basics$identity;
 var author$project$Main$initialModel = {
-	s: 0.0,
-	O: _List_Nil,
-	G: '',
-	R: '',
-	o: author$project$RageGuy$initialModel,
-	a$: '',
-	aI: elm$time$Time$millisToPosix(0)
+	h: 0.0,
+	M: _List_Nil,
+	s: '',
+	Q: '',
+	e: author$project$RageGuy$initialModel,
+	U: elm$time$Time$millisToPosix(0),
+	a2: ''
 };
 var elm$core$Basics$True = 0;
 var elm$core$Result$isOk = function (result) {
@@ -4881,7 +4881,7 @@ var author$project$Main$init = function (_n0) {
 	return _Utils_Tuple2(author$project$Main$initialModel, elm$core$Platform$Cmd$none);
 };
 var author$project$Main$Tick = function (a) {
-	return {$: 5, a: a};
+	return {$: 6, a: a};
 };
 var elm$time$Time$Every = F2(
 	function (a, b) {
@@ -5392,23 +5392,24 @@ var author$project$Main$subscriptions = function (_n0) {
 	return A2(elm$time$Time$every, 100, author$project$Main$Tick);
 };
 var author$project$Discussion$Message = F4(
-	function (user, timestamp, subject, body) {
-		return {aM: body, a$: subject, a1: timestamp, a5: user};
+	function (user, timestamp, topic, body) {
+		return {aL: body, a0: timestamp, a2: topic, a5: user};
 	});
 var author$project$Discussion$User = function (username) {
 	return {a6: username};
 };
-var author$project$RageGuy$RageUpButDontFFFUUU = function (a) {
-	return {$: 3, a: a};
+var author$project$RageGuy$RageUp = function (a) {
+	return {$: 1, a: a};
 };
 var author$project$RageGuy$Annoyed = 1;
 var author$project$RageGuy$Drooling = 3;
 var author$project$RageGuy$FFFUUU = 5;
 var author$project$RageGuy$Pissed = 2;
 var author$project$RageGuy$VergeOfExplosion = 4;
-var author$project$RageGuy$angerToMood = function (anger) {
-	return (anger < 0.1) ? 0 : ((anger < 0.25) ? 1 : ((anger < 0.5) ? 2 : ((anger < 0.8) ? 3 : ((anger < 1.0) ? 4 : 5))));
-};
+var author$project$RageGuy$angerToMood = F2(
+	function (anger, isRaging) {
+		return isRaging ? 5 : ((anger < 0.1) ? 0 : ((anger < 0.25) ? 1 : ((anger < 0.5) ? 2 : ((anger < 0.8) ? 3 : 4))));
+	});
 var author$project$RageGuy$nextMood = function (mood) {
 	switch (mood) {
 		case 0:
@@ -5571,14 +5572,14 @@ var author$project$RageGuy$framesDefinition = function (mood) {
 						reverse(downToUp)
 					]));
 			return {
-				v: staticFrames,
-				w: elm$core$Dict$fromList(transitions)
+				u: staticFrames,
+				v: elm$core$Dict$fromList(transitions)
 			};
 		case 1:
 			return {
-				v: _List_fromArray(
+				u: _List_fromArray(
 					[0, 1, 2]),
-				w: elm$core$Dict$fromList(
+				v: elm$core$Dict$fromList(
 					A2(rangeAndSequence, 3, 6))
 			};
 		case 2:
@@ -5617,8 +5618,8 @@ var author$project$RageGuy$framesDefinition = function (mood) {
 						upToDown
 					]));
 			return {
-				v: staticFrames,
-				w: elm$core$Dict$fromList(transitions)
+				u: staticFrames,
+				v: elm$core$Dict$fromList(transitions)
 			};
 		case 3:
 			var transitions = elm$core$List$concat(
@@ -5655,8 +5656,8 @@ var author$project$RageGuy$framesDefinition = function (mood) {
 						closesToOpen
 					]));
 			return {
-				v: staticFrames,
-				w: elm$core$Dict$fromList(transitions)
+				u: staticFrames,
+				v: elm$core$Dict$fromList(transitions)
 			};
 		case 4:
 			var transitions = elm$core$List$concat(
@@ -5669,15 +5670,38 @@ var author$project$RageGuy$framesDefinition = function (mood) {
 						sequence(
 						A2(elm$core$List$range, 5, 8))
 					]));
+			var openToClose = _List_fromArray(
+				[4]);
+			var openEyes = _List_fromArray(
+				[0, 1, 2, 3]);
+			var closesToOpen = reverse(openToClose);
+			var closedEyes = _List_fromArray(
+				[5, 6]);
+			var staticFrames = elm$core$List$concat(
+				_List_fromArray(
+					[
+						A2(repeat, 6, openEyes),
+						openToClose,
+						A2(repeat, 2, closedEyes),
+						closesToOpen,
+						A2(repeat, 5, openEyes),
+						openToClose,
+						A2(repeat, 8, closedEyes),
+						closesToOpen,
+						A2(repeat, 3, openEyes),
+						openToClose,
+						A2(repeat, 1, closedEyes),
+						closesToOpen
+					]));
 			return {
-				v: A2(elm$core$List$range, 0, 4),
-				w: elm$core$Dict$fromList(transitions)
+				u: staticFrames,
+				v: elm$core$Dict$fromList(transitions)
 			};
 		default:
 			return {
-				v: _List_fromArray(
+				u: _List_fromArray(
 					[0, 1, 2]),
-				w: elm$core$Dict$empty
+				v: elm$core$Dict$empty
 			};
 	}
 };
@@ -5686,7 +5710,7 @@ var author$project$RageGuy$maybeMoodTransitionFrameAfter = F2(
 		return A2(
 			elm$core$Dict$get,
 			lastFrame,
-			author$project$RageGuy$framesDefinition(mood).w);
+			author$project$RageGuy$framesDefinition(mood).v);
 	});
 var elm$core$Array$fromListHelp = F3(
 	function (list, nodeList, nodeListSize) {
@@ -5782,7 +5806,7 @@ var elm$core$Maybe$withDefault = F2(
 var author$project$RageGuy$relativeFrameForStaticMood = F2(
 	function (clock, mood) {
 		var cycle = elm$core$Array$fromList(
-			author$project$RageGuy$framesDefinition(mood).v);
+			author$project$RageGuy$framesDefinition(mood).u);
 		return A2(
 			elm$core$Maybe$withDefault,
 			0,
@@ -5794,79 +5818,53 @@ var author$project$RageGuy$relativeFrameForStaticMood = F2(
 					clock),
 				cycle));
 	});
-var elm$core$Basics$min = F2(
-	function (x, y) {
-		return (_Utils_cmp(x, y) < 0) ? x : y;
-	});
 var author$project$RageGuy$update = F2(
 	function (msg, model) {
-		switch (msg.$) {
-			case 0:
-				var targetAnger = model.X ? A2(elm$core$Basics$min, 1.0, model.l + 1.0e-2) : model.l;
-				var targetMood = author$project$RageGuy$angerToMood(targetAnger);
-				var modelX = function () {
-					if (model.P) {
-						if (A2(author$project$RageGuy$isMoodBefore, model.k, targetMood)) {
-							var _n1 = A2(author$project$RageGuy$maybeMoodTransitionFrameAfter, model.z, model.k);
-							if (!_n1.$) {
-								var nextFrame = _n1.a;
-								return _Utils_update(
-									model,
-									{z: nextFrame});
-							} else {
-								return _Utils_update(
-									model,
-									{
-										p: 0,
-										P: false,
-										z: 0,
-										k: author$project$RageGuy$nextMood(model.k)
-									});
-							}
+		if (!msg.$) {
+			var targetMood = A2(author$project$RageGuy$angerToMood, model.T, model.O);
+			var newModel = function () {
+				if (model.N) {
+					if (A2(author$project$RageGuy$isMoodBefore, model.aT, targetMood)) {
+						var _n1 = A2(author$project$RageGuy$maybeMoodTransitionFrameAfter, model.y, model.aT);
+						if (!_n1.$) {
+							var nextFrame = _n1.a;
+							return _Utils_update(
+								model,
+								{y: nextFrame});
 						} else {
-							return model;
-						}
-					} else {
-						if (_Utils_eq(model.k, targetMood)) {
 							return _Utils_update(
 								model,
 								{
-									p: model.p + 1,
-									z: A2(author$project$RageGuy$relativeFrameForStaticMood, model.p, model.k)
+									o: 0,
+									N: false,
+									y: 0,
+									aT: author$project$RageGuy$nextMood(model.aT)
 								});
-						} else {
-							return _Utils_update(
-								model,
-								{P: true});
 						}
+					} else {
+						return model;
 					}
-				}();
-				return _Utils_update(
-					modelX,
-					{l: targetAnger});
-			case 3:
-				var amount = msg.a;
-				var targetAnger = A2(
-					elm$core$Basics$max,
-					model.l,
-					A2(elm$core$Basics$min, 0.999, model.l + amount));
-				return _Utils_update(
-					model,
-					{l: targetAnger});
-			case 2:
-				var amount = msg.a;
-				var targetAnger = A2(
-					elm$core$Basics$max,
-					model.l,
-					A2(elm$core$Basics$min, 1.0, model.l + amount));
-				return _Utils_update(
-					model,
-					{l: targetAnger});
-			default:
-				var isAutoRageUP = msg.a;
-				return _Utils_update(
-					model,
-					{X: isAutoRageUP});
+				} else {
+					if (_Utils_eq(model.aT, targetMood)) {
+						return _Utils_update(
+							model,
+							{
+								o: model.o + 1,
+								y: A2(author$project$RageGuy$relativeFrameForStaticMood, model.o, model.aT)
+							});
+					} else {
+						return _Utils_update(
+							model,
+							{N: true});
+					}
+				}
+			}();
+			return newModel;
+		} else {
+			var amount = msg.a;
+			return _Utils_update(
+				model,
+				{T: model.T + amount});
 		}
 	});
 var author$project$SwearWords$translationList = _List_fromArray(
@@ -6023,6 +6021,7 @@ var author$project$Czech$words = _List_fromArray(
 		_Utils_Tuple2('chcan', 0.1),
 		_Utils_Tuple2('chcat', 0.1),
 		_Utils_Tuple2('chčij', 0.1),
+		_Utils_Tuple2('čurák', 0.1),
 		_Utils_Tuple2('idiot', 0.1),
 		_Utils_Tuple2('jeb', 0.1),
 		_Utils_Tuple2('kedr', 0.1),
@@ -6227,6 +6226,10 @@ var author$project$SwearWords$severityOfMaybeSwearWordAdded = F2(
 			elm$core$String$length(oldString),
 			elm$core$String$length(newString)) < 0) && (!_Utils_eq(oldLastWord, newLastWord))) ? severity : 0.0;
 	});
+var elm$core$Basics$min = F2(
+	function (x, y) {
+		return (_Utils_cmp(x, y) < 0) ? x : y;
+	});
 var author$project$Main$updatedModelRage = F5(
 	function (model, maxLength, stringGetter, stringSetter, newString) {
 		if (_Utils_cmp(
@@ -6239,13 +6242,14 @@ var author$project$Main$updatedModelRage = F5(
 				2.0e-3 * (elm$core$String$length(newString) - elm$core$String$length(oldString)));
 			var severityOfMaybeSwearWordAdded = A2(author$project$SwearWords$severityOfMaybeSwearWordAdded, oldString, newString);
 			var addedSeverity = severityOfMaybeSwearWordAdded + severityOfMaybeCharsAdded;
-			var angerFlash_ = (15 * addedSeverity) + model.s;
-			var angerFlash__ = (angerFlash_ < 0.5) ? (angerFlash_ + 0.3) : angerFlash_;
-			var rageGuyUpdateMsg = author$project$RageGuy$RageUpButDontFFFUUU(addedSeverity);
-			var rageGuy = A2(author$project$RageGuy$update, rageGuyUpdateMsg, model.o);
+			var angerFlash = A2(elm$core$Basics$min, 5.0, (50 * addedSeverity) + model.h);
+			var rageGuy = A2(
+				author$project$RageGuy$update,
+				author$project$RageGuy$RageUp(addedSeverity),
+				model.e);
 			var model_ = _Utils_update(
 				model,
-				{s: angerFlash__, o: rageGuy});
+				{h: angerFlash, e: rageGuy});
 			var model__ = A2(stringSetter, newString, model_);
 			return model__;
 		} else {
@@ -6253,44 +6257,75 @@ var author$project$Main$updatedModelRage = F5(
 		}
 	});
 var author$project$RageGuy$Tick = {$: 0};
-var author$project$RageGuy$shouldSendMessage = function (model) {
-	return (model.k === 5) && (model.p === 1);
+var elm$core$String$isEmpty = function (string) {
+	return string === '';
 };
 var author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
 			case 0:
 				return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
-			case 5:
+			case 6:
 				var time = msg.a;
-				var rageGuy = A2(author$project$RageGuy$update, author$project$RageGuy$Tick, model.o);
-				var angerFlash = A2(elm$core$Basics$max, 0.0, model.s - 0.2);
-				var model_ = _Utils_update(
-					model,
-					{s: angerFlash, o: rageGuy});
-				var model__ = function () {
-					if (author$project$RageGuy$shouldSendMessage(model.o)) {
-						var user = author$project$Discussion$User(model.R);
-						var newMessage = A4(author$project$Discussion$Message, user, time, model.a$, model.G);
-						var newDiscussion = A2(elm$core$List$cons, newMessage, model.O);
-						return _Utils_update(
-							model_,
-							{O: newDiscussion});
-					} else {
-						return model_;
-					}
-				}();
-				return _Utils_Tuple2(model__, elm$core$Platform$Cmd$none);
-			case 1:
-				var rageGuyMsg = msg.a;
+				var rageGuy = A2(author$project$RageGuy$update, author$project$RageGuy$Tick, model.e);
+				var angerFlash = model.h - 0.2;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{
-							o: A2(author$project$RageGuy$update, rageGuyMsg, model.o)
-						}),
+						{h: angerFlash, e: rageGuy, U: time}),
 					elm$core$Platform$Cmd$none);
-			case 4:
+			case 1:
+				var rageGuyMsg = msg.a;
+				var oldAnger = model.e.T;
+				var newRageGuy = A2(author$project$RageGuy$update, rageGuyMsg, model.e);
+				var angerDiff = newRageGuy.T - oldAnger;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{h: (model.h + angerDiff) * 10.0, e: newRageGuy}),
+					elm$core$Platform$Cmd$none);
+			case 2:
+				var rageGuy = model.e;
+				var newModel = function () {
+					if ((rageGuy.T >= 1.0) && ((!rageGuy.O) && (!elm$core$String$isEmpty(model.s)))) {
+						var user = author$project$Discussion$User(model.Q);
+						var newMessage = A4(author$project$Discussion$Message, user, model.U, model.a2, model.s);
+						var newDiscussion = A2(elm$core$List$cons, newMessage, model.M);
+						return _Utils_update(
+							model,
+							{
+								M: newDiscussion,
+								s: '',
+								e: _Utils_update(
+									rageGuy,
+									{O: true}),
+								a2: ''
+							});
+					} else {
+						if (rageGuy.O) {
+							return _Utils_update(
+								model,
+								{
+									h: 5.0,
+									e: _Utils_update(
+										rageGuy,
+										{O: false, aT: 0, T: 0.0})
+								});
+						} else {
+							return _Utils_update(
+								model,
+								{
+									h: model.h + 1.0,
+									e: A2(
+										author$project$RageGuy$update,
+										author$project$RageGuy$RageUp(5.0e-2),
+										model.e)
+								});
+						}
+					}
+				}();
+				return _Utils_Tuple2(newModel, elm$core$Platform$Cmd$none);
+			case 5:
 				var message = msg.a;
 				return _Utils_Tuple2(
 					A5(
@@ -6298,62 +6333,57 @@ var author$project$Main$update = F2(
 						model,
 						2000,
 						function ($) {
-							return $.G;
+							return $.s;
 						},
 						F2(
 							function (string, m) {
 								return _Utils_update(
 									m,
-									{G: string});
+									{s: string});
 							}),
 						message),
 					elm$core$Platform$Cmd$none);
-			case 3:
-				var subject = msg.a;
+			case 4:
+				var topic = msg.a;
 				return _Utils_Tuple2(
 					A5(
 						author$project$Main$updatedModelRage,
 						model,
 						100,
 						function ($) {
-							return $.a$;
+							return $.a2;
 						},
 						F2(
 							function (string, m) {
 								return _Utils_update(
 									m,
-									{a$: string});
+									{a2: string});
 							}),
-						subject),
+						topic),
 					elm$core$Platform$Cmd$none);
 			default:
 				var newUser = msg.a;
 				return (elm$core$String$length(newUser) < 30) ? _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{R: newUser}),
+						{Q: newUser}),
 					elm$core$Platform$Cmd$none) : _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
 		}
 	});
+var author$project$Main$ClickRageGuy = {$: 2};
 var author$project$Main$MessageUpdate = function (a) {
-	return {$: 4, a: a};
+	return {$: 5, a: a};
 };
 var author$project$Main$RageGuyMsg = function (a) {
 	return {$: 1, a: a};
 };
-var author$project$Main$SubjectUpdate = function (a) {
-	return {$: 3, a: a};
+var author$project$Main$TopicUpdate = function (a) {
+	return {$: 4, a: a};
 };
 var author$project$Main$UserUpdate = function (a) {
-	return {$: 2, a: a};
+	return {$: 3, a: a};
 };
 var author$project$RageGuy$rageGuyImageWidth = 540;
-var author$project$RageGuy$RageUp = function (a) {
-	return {$: 2, a: a};
-};
-var author$project$RageGuy$SetAutoRageUp = function (a) {
-	return {$: 1, a: a};
-};
 var author$project$RageGuy$startFrame = function (mood) {
 	switch (mood) {
 		case 0:
@@ -6525,41 +6555,6 @@ var elm$html$Html$Attributes$width = function (n) {
 		'width',
 		elm$core$String$fromInt(n));
 };
-var elm$virtual_dom$VirtualDom$Normal = function (a) {
-	return {$: 0, a: a};
-};
-var elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
-var elm$html$Html$Events$on = F2(
-	function (event, decoder) {
-		return A2(
-			elm$virtual_dom$VirtualDom$on,
-			event,
-			elm$virtual_dom$VirtualDom$Normal(decoder));
-	});
-var elm$html$Html$Events$onClick = function (msg) {
-	return A2(
-		elm$html$Html$Events$on,
-		'click',
-		elm$json$Json$Decode$succeed(msg));
-};
-var elm$html$Html$Events$onMouseDown = function (msg) {
-	return A2(
-		elm$html$Html$Events$on,
-		'mousedown',
-		elm$json$Json$Decode$succeed(msg));
-};
-var elm$html$Html$Events$onMouseLeave = function (msg) {
-	return A2(
-		elm$html$Html$Events$on,
-		'mouseleave',
-		elm$json$Json$Decode$succeed(msg));
-};
-var elm$html$Html$Events$onMouseUp = function (msg) {
-	return A2(
-		elm$html$Html$Events$on,
-		'mouseup',
-		elm$json$Json$Decode$succeed(msg));
-};
 var author$project$RageGuy$view = function (model) {
 	var randomShifts = elm$core$Array$fromList(
 		_List_fromArray(
@@ -6573,7 +6568,7 @@ var author$project$RageGuy$view = function (model) {
 				A2(
 					elm$core$Basics$modBy,
 					elm$core$Array$length(randomShifts),
-					n + model.p),
+					n + model.o),
 				randomShifts));
 	};
 	var numberOfFFFRows = 5;
@@ -6624,7 +6619,7 @@ var author$project$RageGuy$view = function (model) {
 					}),
 				texts));
 	};
-	var index = author$project$RageGuy$startFrame(model.k) + model.z;
+	var index = author$project$RageGuy$startFrame(model.aT) + model.y;
 	var leftSpritePosition = elm$core$String$fromInt((-author$project$RageGuy$rageGuyImageWidth) * index) + 'px';
 	var height = 360;
 	var fffuuuuTextCut = function (limit) {
@@ -6641,20 +6636,12 @@ var author$project$RageGuy$view = function (model) {
 			},
 			A2(elm$core$List$range, 0, numberOfFFFRows * 2));
 	};
-	var fffuuuTextDivs = (model.k === 5) ? textDivs(
-		fffuuuuTextCut(model.p * 3)) : _List_Nil;
+	var fffuuuTextDivs = (model.aT === 5) ? textDivs(
+		fffuuuuTextCut(model.o * 3)) : _List_Nil;
 	return A2(
 		elm$html$Html$div,
 		_List_fromArray(
 			[
-				elm$html$Html$Events$onClick(
-				author$project$RageGuy$RageUp(1.0e-2)),
-				elm$html$Html$Events$onMouseDown(
-				author$project$RageGuy$SetAutoRageUp(true)),
-				elm$html$Html$Events$onMouseUp(
-				author$project$RageGuy$SetAutoRageUp(false)),
-				elm$html$Html$Events$onMouseLeave(
-				author$project$RageGuy$SetAutoRageUp(false)),
 				A2(elm$html$Html$Attributes$style, 'position', 'relative'),
 				elm$html$Html$Attributes$width(author$project$RageGuy$rageGuyImageWidth),
 				A2(
@@ -6696,7 +6683,9 @@ var author$project$Utils$rgb = F3(
 	function (red, green, blue) {
 		return {_: 255, aa: blue, ab: green, af: red};
 	});
+var elm$core$Basics$cos = _Basics_cos;
 var elm$core$Basics$round = _Basics_round;
+var elm$core$Basics$sin = _Basics_sin;
 var elm$core$List$intersperse = F2(
 	function (sep, xs) {
 		if (!xs.b) {
@@ -6739,6 +6728,23 @@ var elm$html$Html$Attributes$class = elm$html$Html$Attributes$stringProperty('cl
 var elm$html$Html$Attributes$placeholder = elm$html$Html$Attributes$stringProperty('placeholder');
 var elm$html$Html$Attributes$type_ = elm$html$Html$Attributes$stringProperty('type');
 var elm$html$Html$Attributes$value = elm$html$Html$Attributes$stringProperty('value');
+var elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 0, a: a};
+};
+var elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			elm$virtual_dom$VirtualDom$on,
+			event,
+			elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		elm$html$Html$Events$on,
+		'click',
+		elm$json$Json$Decode$succeed(msg));
+};
 var elm$html$Html$Events$alwaysStop = function (x) {
 	return _Utils_Tuple2(x, true);
 };
@@ -6772,14 +6778,14 @@ var elm$html$Html$Events$onInput = function (tagger) {
 			elm$html$Html$Events$alwaysStop,
 			A2(elm$json$Json$Decode$map, tagger, elm$html$Html$Events$targetValue)));
 };
-var elm$time$Time$flooredDiv = F2(
-	function (numerator, denominator) {
-		return elm$core$Basics$floor(numerator / denominator);
-	});
 var elm$time$Time$posixToMillis = function (_n0) {
 	var millis = _n0;
 	return millis;
 };
+var elm$time$Time$flooredDiv = F2(
+	function (numerator, denominator) {
+		return elm$core$Basics$floor(numerator / denominator);
+	});
 var elm$time$Time$toAdjustedMinutesHelp = F3(
 	function (defaultOffset, posixMinutes, eras) {
 		toAdjustedMinutesHelp:
@@ -6851,18 +6857,18 @@ var author$project$Main$view = function (model) {
 			[
 				elm$html$Html$Attributes$type_('Text'),
 				elm$html$Html$Attributes$placeholder('Your  name'),
-				elm$html$Html$Attributes$value(model.R),
+				elm$html$Html$Attributes$value(model.Q),
 				elm$html$Html$Events$onInput(author$project$Main$UserUpdate)
 			]),
 		_List_Nil);
-	var subjectInput = A2(
+	var topicInput = A2(
 		elm$html$Html$input,
 		_List_fromArray(
 			[
 				elm$html$Html$Attributes$type_('Text'),
 				elm$html$Html$Attributes$placeholder('Topic'),
-				elm$html$Html$Attributes$value(model.a$),
-				elm$html$Html$Events$onInput(author$project$Main$SubjectUpdate)
+				elm$html$Html$Attributes$value(model.a2),
+				elm$html$Html$Events$onInput(author$project$Main$TopicUpdate)
 			]),
 		_List_Nil);
 	var row = function (html) {
@@ -6873,13 +6879,6 @@ var author$project$Main$view = function (model) {
 					elm$html$Html$Attributes$class('row')
 				]),
 			html);
-	};
-	var ratioTo255 = function (ratio) {
-		return elm$core$Basics$round(
-			A2(
-				elm$core$Basics$max,
-				0,
-				A2(elm$core$Basics$min, ratio * 255, 255)));
 	};
 	var rageGuyView = A2(
 		elm$html$Html$div,
@@ -6896,7 +6895,7 @@ var author$project$Main$view = function (model) {
 				A2(
 				elm$html$Html$map,
 				author$project$Main$RageGuyMsg,
-				author$project$RageGuy$view(model.o))
+				author$project$RageGuy$view(model.e))
 			]));
 	var messageInput = A2(
 		elm$html$Html$textarea,
@@ -6904,7 +6903,7 @@ var author$project$Main$view = function (model) {
 			[
 				A2(elm$html$Html$Attributes$style, 'height', '200'),
 				elm$html$Html$Attributes$placeholder('Enter your hate message. The more you swear the angrier Rage guy becomes! Click him to bully him even more, make him rage to have your message posted!'),
-				elm$html$Html$Attributes$value(model.G),
+				elm$html$Html$Attributes$value(model.s),
 				elm$html$Html$Events$onInput(author$project$Main$MessageUpdate)
 			]),
 		_List_Nil);
@@ -6937,7 +6936,7 @@ var author$project$Main$view = function (model) {
 					_List_fromArray(
 						[
 							elm$html$Html$text(
-							formatTime(message.a1))
+							formatTime(message.a0))
 						])),
 					elm$html$Html$text(' '),
 					A2(
@@ -6945,14 +6944,14 @@ var author$project$Main$view = function (model) {
 					_List_Nil,
 					_List_fromArray(
 						[
-							elm$html$Html$text(message.a$)
+							elm$html$Html$text(message.a2)
 						])),
 					A2(
 					elm$html$Html$p,
 					_List_Nil,
 					_List_fromArray(
 						[
-							elm$html$Html$text(message.aM)
+							elm$html$Html$text(message.aL)
 						]))
 				]));
 	};
@@ -6994,12 +6993,28 @@ var author$project$Main$view = function (model) {
 				]),
 			html);
 	};
-	var angerColor = author$project$Utils$colorToHex(
-		A3(
-			author$project$Utils$rgb,
-			255,
-			ratioTo255(0.98 - model.s),
-			ratioTo255(0.97 - model.s)));
+	var angerColor = function () {
+		var now = elm$time$Time$posixToMillis(model.U);
+		var interpolate = F3(
+			function (start, end, ratio) {
+				return elm$core$Basics$round(start + (ratio * (end - start)));
+			});
+		var interpolate3 = F5(
+			function (a, b, c, d, p) {
+				return (p < 0.0) ? a : ((p < 1.0) ? A3(interpolate, a, b, p) : ((p < 2.0) ? A3(interpolate, b, c, p - 1.0) : ((p < 3.0) ? A3(interpolate, c, d, p - 2.0) : d)));
+			});
+		var anger = (model.e.T < 1.0) ? (model.h * 0.1) : ((!model.e.O) ? (((1.5 + elm$core$Basics$sin(now / 500.0)) + (0.5 * elm$core$Basics$sin(0.3 + (now / 400.0)))) + (0.4 * elm$core$Basics$cos(0.8 + (now / 300.0)))) : (((1.0 + elm$core$Basics$sin(now / 500.0)) + (0.5 * elm$core$Basics$sin(0.3 + (now / 100.0)))) + (0.4 * elm$core$Basics$cos(0.8 + (now / 200.0)))));
+		var angerColorComponent = F4(
+			function (a, b, c, d) {
+				return A5(interpolate3, a, b, c, d, anger);
+			});
+		return author$project$Utils$colorToHex(
+			A3(
+				author$project$Utils$rgb,
+				A4(angerColorComponent, 255, 255, 192, 64),
+				A4(angerColorComponent, 255, 128, 64, 32),
+				A4(angerColorComponent, 255, 128, 64, 32)));
+	}();
 	return A2(
 		elm$html$Html$section,
 		_List_fromArray(
@@ -7022,11 +7037,17 @@ var author$project$Main$view = function (model) {
 									[
 										userNameInput,
 										A2(elm$html$Html$br, _List_Nil, _List_Nil),
-										subjectInput,
+										topicInput,
 										A2(elm$html$Html$br, _List_Nil, _List_Nil),
 										messageInput
 									])),
-								col(
+								A2(
+								elm$html$Html$div,
+								_List_fromArray(
+									[
+										elm$html$Html$Attributes$class('column'),
+										elm$html$Html$Events$onClick(author$project$Main$ClickRageGuy)
+									]),
 								_List_fromArray(
 									[rageGuyView]))
 							])),
@@ -7037,7 +7058,7 @@ var author$project$Main$view = function (model) {
 						A2(
 							elm$core$List$intersperse,
 							A2(elm$html$Html$hr, _List_Nil, _List_Nil),
-							A2(elm$core$List$map, viewMessage, model.O)))
+							A2(elm$core$List$map, viewMessage, model.M)))
 					]))
 			]));
 };
@@ -7120,9 +7141,6 @@ var elm$core$String$startsWith = _String_startsWith;
 var elm$url$Url$Http = 0;
 var elm$url$Url$Https = 1;
 var elm$core$String$indexes = _String_indexes;
-var elm$core$String$isEmpty = function (string) {
-	return string === '';
-};
 var elm$core$String$left = F2(
 	function (n, string) {
 		return (n < 1) ? '' : A3(elm$core$String$slice, 0, n, string);
@@ -7236,6 +7254,6 @@ var elm$url$Url$fromString = function (str) {
 };
 var elm$browser$Browser$element = _Browser_element;
 var author$project$Main$main = elm$browser$Browser$element(
-	{aT: author$project$Main$init, a0: author$project$Main$subscriptions, a3: author$project$Main$update, a7: author$project$Main$view});
+	{aS: author$project$Main$init, a$: author$project$Main$subscriptions, a3: author$project$Main$update, a7: author$project$Main$view});
 _Platform_export({'Main':{'init':author$project$Main$main(
 	elm$json$Json$Decode$succeed(0))(0)}});}(this));

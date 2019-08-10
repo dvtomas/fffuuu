@@ -75,15 +75,19 @@ nextMood mood =
 type alias Model =
     { clock : Int
     , mood : Mood
+    , isRaging : Bool
     , isMoodInTransition : Bool
     , lastRelativeFrame : Int
     , targetAnger : Anger
     }
 
 
-angerToMood : Anger -> Mood
-angerToMood anger =
-    if anger < 0.1 then
+angerToMood : Anger -> Bool -> Mood
+angerToMood anger isRaging =
+    if isRaging then
+        FFFUUU
+
+    else if anger < 0.1 then
         Neutral
 
     else if anger < 0.25 then
@@ -95,17 +99,15 @@ angerToMood anger =
     else if anger < 0.8 then
         Drooling
 
-    else if anger < 1.0 then
-        VergeOfExplosion
-
     else
-        FFFUUU
+        VergeOfExplosion
 
 
 initialModel : Model
 initialModel =
     { clock = 0
     , mood = Neutral
+    , isRaging = False
     , isMoodInTransition = False
     , lastRelativeFrame = 0
     , targetAnger = 0
@@ -258,13 +260,41 @@ framesDefinition mood =
 
         VergeOfExplosion ->
             let
+                openEyes =
+                    [ 0, 1, 2, 3 ]
+
+                openToClose =
+                    [ 4 ]
+
+                closesToOpen =
+                    reverse openToClose
+
+                closedEyes =
+                    [ 5, 6 ]
+
+                staticFrames =
+                    List.concat
+                        [ repeat 6 openEyes
+                        , openToClose
+                        , repeat 2 closedEyes
+                        , closesToOpen
+                        , repeat 5 openEyes
+                        , openToClose
+                        , repeat 8 closedEyes
+                        , closesToOpen
+                        , repeat 3 openEyes
+                        , openToClose
+                        , repeat 1 closedEyes
+                        , closesToOpen
+                        ]
+
                 transitions =
                     List.concat
                         [ mapRangeTo (List.range 0 4) 5
                         , sequence (List.range 5 8)
                         ]
             in
-            { staticFrames = List.range 0 4, transitions = Dict.fromList transitions }
+            { staticFrames = staticFrames, transitions = Dict.fromList transitions }
 
         FFFUUU ->
             { staticFrames = [ 0, 1, 2 ], transitions = Dict.empty }
@@ -287,7 +317,6 @@ maybeMoodTransitionFrameAfter lastFrame mood =
 type Msg
     = Tick
     | RageUp Float
-    | RageUpButDontFFFUUU Float
 
 
 update : Msg -> Model -> Model
@@ -296,7 +325,7 @@ update msg model =
         Tick ->
             let
                 targetMood =
-                    angerToMood model.targetAnger
+                    angerToMood model.targetAnger model.isRaging
 
                 newModel =
                     if model.isMoodInTransition then
@@ -328,19 +357,8 @@ update msg model =
             in
             newModel
 
-        RageUpButDontFFFUUU amount ->
-            let
-                targetAnger =
-                    max model.targetAnger (min 0.999 (model.targetAnger + amount))
-            in
-            { model | targetAnger = targetAnger }
-
         RageUp amount ->
-            let
-                targetAnger =
-                    max model.targetAnger (min 1.0 (model.targetAnger + amount))
-            in
-            { model | targetAnger = targetAnger }
+            { model | targetAnger = model.targetAnger + amount }
 
 
 rageGuyImageWidth : number
