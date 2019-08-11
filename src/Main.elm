@@ -5,8 +5,6 @@ import Discussion
 import Html exposing (..)
 import Html.Attributes as A
 import Html.Events exposing (onInput)
-import Http
-import Json.Decode exposing (Decoder, field, string)
 import RageGuy
 import String
 import SwearWords
@@ -61,13 +59,13 @@ init _ =
 type Msg
     = NoOp
     | RageGuyMsg RageGuy.Msg
+    | DiscussionMsg Discussion.Msg
     | ClickRageGuy
     | UserUpdate String
     | TopicUpdate String
     | MessageUpdate String
     | Tick Time.Posix
     | AdjustTimeZone Time.Zone
-    | GotGif (Result Http.Error String)
 
 
 updatedModelRage :
@@ -111,19 +109,17 @@ updatedModelRage model maxLength stringGetter stringSetter newString =
         model
 
 
+restDbError description httpError time =
+    { username = "RestDB communication"
+    , timestamp = time
+    , topic = description
+    , message = Discussion.httpErrorToString httpError
+    }
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        GotGif (Ok url) ->
-            ( { model | discussion = { username = "Cat", timestamp = Time.millisToPosix 0, topic = "Topic", message = url } :: model.discussion }
-            , Cmd.none
-            )
-
-        GotGif (Err _) ->
-            ( { model | discussion = { username = "Error", timestamp = Time.millisToPosix 0, topic = "Topic", message = "Error reading cat" } :: model.discussion }
-            , Cmd.none
-            )
-
         NoOp ->
             ( model, Cmd.none )
 
@@ -160,7 +156,7 @@ update msg model =
                 rageGuy =
                     model.rageGuy
 
-                newModel =
+                result =
                     if rageGuy.targetAnger >= 1.0 && not rageGuy.isRaging && not (String.isEmpty model.message) then
                         -- Start raging, post the message
                         let
@@ -172,26 +168,33 @@ update msg model =
 
                             newDiscussion =
                                 newMessage :: model.discussion
+
+                            newModel =
+                                { model
+                                    | topic = ""
+                                    , message = ""
+                                    , discussion = newDiscussion
+                                    , rageGuy = { rageGuy | isRaging = True }
+                                }
                         in
-                        { model
-                            | topic = ""
-                            , message = ""
-                            , discussion = newDiscussion
-                            , rageGuy = { rageGuy | isRaging = True }
-                        }
+                        ( newModel, Cmd.map DiscussionMsg (Discussion.postMessageCmd newMessage) )
 
                     else if rageGuy.isRaging then
                         -- Cool down
-                        { model | angerFlash = 5.0, rageGuy = { rageGuy | targetAnger = 0.0, isRaging = False, mood = RageGuy.Neutral } }
+                        ( { model | angerFlash = 5.0, rageGuy = { rageGuy | targetAnger = 0.0, isRaging = False, mood = RageGuy.Neutral } }
+                        , Cmd.none
+                        )
 
                     else
                         -- Increment anger and flash
-                        { model
+                        ( { model
                             | angerFlash = model.angerFlash + 1.0
                             , rageGuy = RageGuy.update (RageGuy.RageUp 0.05) model.rageGuy
-                        }
+                          }
+                        , Cmd.map DiscussionMsg (Discussion.getMessagesCmd {})
+                        )
             in
-            ( newModel, getRandomCatGif )
+            result
 
         MessageUpdate message ->
             ( updatedModelRage model 2000 .message (\string m -> { m | message = string }) message
@@ -209,6 +212,26 @@ update msg model =
 
             else
                 ( model, Cmd.none )
+
+        DiscussionMsg (Discussion.MessagePosted (Ok message)) ->
+            ( { model | discussion = message :: model.discussion }
+            , Cmd.none
+            )
+
+        DiscussionMsg (Discussion.MessagePosted (Err error)) ->
+            ( { model | discussion = restDbError "Error while posting message" error model.time :: model.discussion }
+            , Cmd.none
+            )
+
+        DiscussionMsg (Discussion.MessagesList (Ok messages)) ->
+            ( { model | discussion = messages }
+            , Cmd.none
+            )
+
+        DiscussionMsg (Discussion.MessagesList (Err error)) ->
+            ( { model | discussion = restDbError "Error while retrieving messages list" error model.time :: model.discussion }
+            , Cmd.none
+            )
 
 
 
@@ -409,19 +432,6 @@ view model =
             ]
         ]
 
--- COMMANDS
-
-
-getRandomCatGif : Cmd Msg
-getRandomCatGif =
-  Http.get
-    { url = "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=fuck"
-    , expect = Http.expectJson GotGif gifDecoder
-    }
-
-gifDecoder : Decoder String
-gifDecoder =
-  field "data" (field "image_url" string)
 
 
 -- SUBSCRIPTIONS

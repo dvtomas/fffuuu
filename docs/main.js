@@ -519,11 +519,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.af.N === region.ak.N)
+	if (region.ab.K === region.ah.K)
 	{
-		return 'on line ' + region.af.N;
+		return 'on line ' + region.ab.K;
 	}
-	return 'on lines ' + region.af.N + ' through ' + region.ak.N;
+	return 'on lines ' + region.ab.K + ' through ' + region.ah.K;
 }
 
 
@@ -1857,9 +1857,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aR,
+		impl.aW,
+		impl.a6,
 		impl.a4,
-		impl.a0,
 		function() { return function() {} }
 	);
 });
@@ -2367,25 +2367,25 @@ var _Http_toTask = F3(function(router, toTask, request)
 	return _Scheduler_binding(function(callback)
 	{
 		function done(response) {
-			callback(toTask(request.aM.a(response)));
+			callback(toTask(request.aj.a(response)));
 		}
 
 		var xhr = new XMLHttpRequest();
 		xhr.addEventListener('error', function() { done(elm$http$Http$NetworkError_); });
 		xhr.addEventListener('timeout', function() { done(elm$http$Http$Timeout_); });
-		xhr.addEventListener('load', function() { done(_Http_toResponse(request.aM.b, xhr)); });
-		elm$core$Maybe$isJust(request.l) && _Http_track(router, xhr, request.l.a);
+		xhr.addEventListener('load', function() { done(_Http_toResponse(request.aj.b, xhr)); });
+		elm$core$Maybe$isJust(request.aK) && _Http_track(router, xhr, request.aK.a);
 
 		try {
-			xhr.open(request.j, request.a5, true);
+			xhr.open(request.ap, request.aL, true);
 		} catch (e) {
-			return done(elm$http$Http$BadUrl_(request.a5));
+			return done(elm$http$Http$BadUrl_(request.aL));
 		}
 
 		_Http_configureRequest(xhr, request);
 
-		request.aJ.a && xhr.setRequestHeader('Content-Type', request.aJ.a);
-		xhr.send(request.aJ.b);
+		request.ae.a && xhr.setRequestHeader('Content-Type', request.ae.a);
+		xhr.send(request.ae.b);
 
 		return function() { xhr.c = true; xhr.abort(); };
 	});
@@ -2396,13 +2396,13 @@ var _Http_toTask = F3(function(router, toTask, request)
 
 function _Http_configureRequest(xhr, request)
 {
-	for (var headers = request.f; headers.b; headers = headers.b) // WHILE_CONS
+	for (var headers = request.al; headers.b; headers = headers.b) // WHILE_CONS
 	{
 		xhr.setRequestHeader(headers.a.a, headers.a.b);
 	}
-	xhr.timeout = request.k.a || 0;
-	xhr.responseType = request.aM.d;
-	xhr.withCredentials = request.B;
+	xhr.timeout = request.aH.a || 0;
+	xhr.responseType = request.aj.d;
+	xhr.withCredentials = request.y;
 }
 
 
@@ -2423,10 +2423,10 @@ function _Http_toResponse(toBody, xhr)
 function _Http_toMetadata(xhr)
 {
 	return {
-		a5: xhr.responseURL,
-		aD: xhr.status,
-		a$: xhr.statusText,
-		f: _Http_parseHeaders(xhr.getAllResponseHeaders())
+		aL: xhr.responseURL,
+		aE: xhr.status,
+		a3: xhr.statusText,
+		al: _Http_parseHeaders(xhr.getAllResponseHeaders())
 	};
 }
 
@@ -2521,15 +2521,15 @@ function _Http_track(router, xhr, tracker)
 	xhr.upload.addEventListener('progress', function(event) {
 		if (xhr.c) { return; }
 		_Scheduler_rawSpawn(A2(elm$core$Platform$sendToSelf, router, _Utils_Tuple2(tracker, elm$http$Http$Sending({
-			a_: event.loaded,
-			ae: event.total
+			a2: event.loaded,
+			aa: event.total
 		}))));
 	});
 	xhr.addEventListener('progress', function(event) {
 		if (xhr.c) { return; }
 		_Scheduler_rawSpawn(A2(elm$core$Platform$sendToSelf, router, _Utils_Tuple2(tracker, elm$http$Http$Receiving({
-			aY: event.loaded,
-			ae: event.lengthComputable ? elm$core$Maybe$Just(event.total) : elm$core$Maybe$Nothing
+			a0: event.loaded,
+			aa: event.lengthComputable ? elm$core$Maybe$Just(event.total) : elm$core$Maybe$Nothing
 		}))));
 	});
 }
@@ -2917,9 +2917,9 @@ var _VirtualDom_mapEventTuple = F2(function(func, tuple)
 var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
-		aS: func(record.aS),
-		ag: record.ag,
-		ac: record.ac
+		ao: func(record.ao),
+		ac: record.ac,
+		Z: record.Z
 	}
 });
 
@@ -3187,11 +3187,11 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 		// 3 = Custom
 
 		var value = result.a;
-		var message = !tag ? value : tag < 3 ? value.a : value.aS;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.ag;
+		var message = !tag ? value : tag < 3 ? value.a : value.ao;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.ac;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value.ac) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.Z) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -4137,9 +4137,9 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aR,
+		impl.aW,
+		impl.a6,
 		impl.a4,
-		impl.a0,
 		function(sendToApp, initialModel) {
 			var view = impl.a7;
 			/**/
@@ -4173,11 +4173,11 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aR,
+		impl.aW,
+		impl.a6,
 		impl.a4,
-		impl.a0,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.O && impl.O(sendToApp)
+			var divertHrefToApp = impl.L && impl.L(sendToApp)
 			var view = impl.a7;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
@@ -4186,12 +4186,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.aJ);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.ae);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.a2) && (_VirtualDom_doc.title = title = doc.a2);
+				(title !== doc.a5) && (_VirtualDom_doc.title = title = doc.a5);
 			});
 		}
 	);
@@ -4242,12 +4242,12 @@ function _Browser_makeAnimator(model, draw)
 
 function _Browser_application(impl)
 {
-	var onUrlChange = impl.aV;
-	var onUrlRequest = impl.aW;
+	var onUrlChange = impl.aZ;
+	var onUrlRequest = impl.a_;
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		O: function(sendToApp)
+		L: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4263,9 +4263,9 @@ function _Browser_application(impl)
 					var next = elm$url$Url$fromString(href).a;
 					sendToApp(onUrlRequest(
 						(next
-							&& curr.aw === next.aw
-							&& curr.an === next.an
-							&& curr.at.a === next.at.a
+							&& curr.ax === next.ax
+							&& curr.am === next.am
+							&& curr.au.a === next.au.a
 						)
 							? elm$browser$Browser$Internal(next)
 							: elm$browser$Browser$External(href)
@@ -4273,13 +4273,13 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		aR: function(flags)
+		aW: function(flags)
 		{
-			return A3(impl.aR, flags, _Browser_getUrl(), key);
+			return A3(impl.aW, flags, _Browser_getUrl(), key);
 		},
 		a7: impl.a7,
-		a4: impl.a4,
-		a0: impl.a0
+		a6: impl.a6,
+		a4: impl.a4
 	});
 }
 
@@ -4345,17 +4345,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { aP: 'hidden', K: 'visibilitychange' }
+		? { aU: 'hidden', H: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { aP: 'mozHidden', K: 'mozvisibilitychange' }
+		? { aU: 'mozHidden', H: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { aP: 'msHidden', K: 'msvisibilitychange' }
+		? { aU: 'msHidden', H: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { aP: 'webkitHidden', K: 'webkitvisibilitychange' }
-		: { aP: 'hidden', K: 'visibilitychange' };
+		? { aU: 'webkitHidden', H: 'webkitvisibilitychange' }
+		: { aU: 'hidden', H: 'visibilitychange' };
 }
 
 
@@ -4436,12 +4436,12 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		aC: _Browser_getScene(),
-		aG: {
-			V: _Browser_window.pageXOffset,
-			W: _Browser_window.pageYOffset,
-			I: _Browser_doc.documentElement.clientWidth,
-			D: _Browser_doc.documentElement.clientHeight
+		aD: _Browser_getScene(),
+		aN: {
+			R: _Browser_window.pageXOffset,
+			S: _Browser_window.pageYOffset,
+			F: _Browser_doc.documentElement.clientWidth,
+			A: _Browser_doc.documentElement.clientHeight
 		}
 	};
 }
@@ -4451,8 +4451,8 @@ function _Browser_getScene()
 	var body = _Browser_doc.body;
 	var elem = _Browser_doc.documentElement;
 	return {
-		I: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-		D: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+		F: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+		A: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
 
@@ -4475,15 +4475,15 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			aC: {
-				I: node.scrollWidth,
-				D: node.scrollHeight
+			aD: {
+				F: node.scrollWidth,
+				A: node.scrollHeight
 			},
-			aG: {
-				V: node.scrollLeft,
-				W: node.scrollTop,
-				I: node.clientWidth,
-				D: node.clientHeight
+			aN: {
+				R: node.scrollLeft,
+				S: node.scrollTop,
+				F: node.clientWidth,
+				A: node.clientHeight
 			}
 		};
 	});
@@ -4513,18 +4513,18 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			aC: _Browser_getScene(),
-			aG: {
-				V: x,
-				W: y,
-				I: _Browser_doc.documentElement.clientWidth,
-				D: _Browser_doc.documentElement.clientHeight
+			aD: _Browser_getScene(),
+			aN: {
+				R: x,
+				S: y,
+				F: _Browser_doc.documentElement.clientWidth,
+				A: _Browser_doc.documentElement.clientHeight
 			},
-			aL: {
-				V: x + rect.left,
-				W: y + rect.top,
-				I: rect.width,
-				D: rect.height
+			aR: {
+				R: x + rect.left,
+				S: y + rect.top,
+				F: rect.width,
+				A: rect.height
 			}
 		};
 	});
@@ -4560,11 +4560,11 @@ function _Browser_load(url)
 	}));
 }
 var author$project$Main$AdjustTimeZone = function (a) {
-	return {$: 7, a: a};
+	return {$: 8, a: a};
 };
 var author$project$RageGuy$Neutral = 0;
 var elm$core$Basics$False = 1;
-var author$project$RageGuy$initialModel = {n: 0, L: false, M: false, x: 0, aT: 0, Q: 0};
+var author$project$RageGuy$initialModel = {k: 0, I: false, J: false, t: 0, aX: 0, N: 0};
 var elm$core$Basics$EQ = 1;
 var elm$core$Basics$LT = 0;
 var elm$core$Elm$JsArray$foldr = _JsArray_foldr;
@@ -4656,14 +4656,14 @@ var elm$time$Time$Zone = F2(
 	});
 var elm$time$Time$utc = A2(elm$time$Time$Zone, 0, _List_Nil);
 var author$project$Main$initialModel = {
-	h: 0.0,
-	o: _List_Nil,
-	aS: '',
+	g: 0.0,
+	h: _List_Nil,
+	ao: '',
 	e: author$project$RageGuy$initialModel,
-	R: elm$time$Time$millisToPosix(0),
-	a3: '',
-	a6: '',
-	X: elm$time$Time$utc
+	w: elm$time$Time$millisToPosix(0),
+	aJ: '',
+	aM: '',
+	T: elm$time$Time$utc
 };
 var elm$core$Task$Perform = elm$core$Basics$identity;
 var elm$core$Task$succeed = _Scheduler_succeed;
@@ -5217,7 +5217,7 @@ var author$project$Main$init = function (_n0) {
 		A2(elm$core$Task$perform, author$project$Main$AdjustTimeZone, elm$time$Time$here));
 };
 var author$project$Main$Tick = function (a) {
-	return {$: 6, a: a};
+	return {$: 7, a: a};
 };
 var elm$time$Time$Every = F2(
 	function (a, b) {
@@ -5227,7 +5227,7 @@ var elm$core$Dict$RBEmpty_elm_builtin = {$: -2};
 var elm$core$Dict$empty = elm$core$Dict$RBEmpty_elm_builtin;
 var elm$time$Time$State = F2(
 	function (taggers, processes) {
-		return {av: processes, aF: taggers};
+		return {aw: processes, aG: taggers};
 	});
 var elm$time$Time$init = elm$core$Task$succeed(
 	A2(elm$time$Time$State, elm$core$Dict$empty, elm$core$Dict$empty));
@@ -5506,7 +5506,7 @@ var elm$time$Time$spawnHelp = F3(
 	});
 var elm$time$Time$onEffects = F3(
 	function (router, subs, _n0) {
-		var processes = _n0.av;
+		var processes = _n0.aw;
 		var rightStep = F3(
 			function (_n6, id, _n7) {
 				var spawns = _n7.a;
@@ -5573,7 +5573,7 @@ var elm$time$Time$onEffects = F3(
 var elm$time$Time$now = _Time_now(elm$time$Time$millisToPosix);
 var elm$time$Time$onSelfMsg = F3(
 	function (router, interval, state) {
-		var _n0 = A2(elm$core$Dict$get, interval, state.aF);
+		var _n0 = A2(elm$core$Dict$get, interval, state.aG);
 		if (_n0.$ === 1) {
 			return elm$core$Task$succeed(state);
 		} else {
@@ -5624,17 +5624,49 @@ var author$project$Main$subscriptions = function (_n0) {
 };
 var author$project$Discussion$Message = F4(
 	function (username, timestamp, topic, message) {
-		return {aS: message, a1: timestamp, a3: topic, a6: username};
+		return {ao: message, aI: timestamp, aJ: topic, aM: username};
 	});
-var author$project$Main$GotGif = function (a) {
-	return {$: 8, a: a};
+var author$project$Discussion$MessagesList = function (a) {
+	return {$: 1, a: a};
 };
+var elm$http$Http$Header = F2(
+	function (a, b) {
+		return {$: 0, a: a, b: b};
+	});
+var elm$http$Http$header = elm$http$Http$Header;
+var author$project$Discussion$apiKeyHeader = A2(elm$http$Http$header, 'x-apikey', '12745cc133246d659d53960af2463940e69d7');
 var elm$json$Json$Decode$field = _Json_decodeField;
+var elm$json$Json$Decode$int = _Json_decodeInt;
+var elm$json$Json$Decode$map = _Json_map1;
+var elm$json$Json$Decode$map4 = _Json_map4;
 var elm$json$Json$Decode$string = _Json_decodeString;
-var author$project$Main$gifDecoder = A2(
-	elm$json$Json$Decode$field,
-	'data',
-	A2(elm$json$Json$Decode$field, 'image_url', elm$json$Json$Decode$string));
+var author$project$Discussion$decoderMessage = A5(
+	elm$json$Json$Decode$map4,
+	author$project$Discussion$Message,
+	A2(elm$json$Json$Decode$field, 'username', elm$json$Json$Decode$string),
+	A2(
+		elm$json$Json$Decode$field,
+		'timestamp',
+		A2(elm$json$Json$Decode$map, elm$time$Time$millisToPosix, elm$json$Json$Decode$int)),
+	A2(elm$json$Json$Decode$field, 'topic', elm$json$Json$Decode$string),
+	A2(elm$json$Json$Decode$field, 'message', elm$json$Json$Decode$string));
+var elm$json$Json$Encode$object = function (pairs) {
+	return _Json_wrap(
+		A3(
+			elm$core$List$foldl,
+			F2(
+				function (_n0, obj) {
+					var k = _n0.a;
+					var v = _n0.b;
+					return A3(_Json_addField, k, v, obj);
+				}),
+			_Json_emptyObject(0),
+			pairs));
+};
+var author$project$Discussion$encodeMessagesQuery = function (query) {
+	return elm$json$Json$Encode$object(_List_Nil);
+};
+var author$project$Discussion$messageApiUrl = 'https://fffuuu-c42f.restdb.io/rest/messages';
 var elm$core$Result$mapError = F2(
 	function (f, result) {
 		if (!result.$) {
@@ -6094,7 +6126,7 @@ var elm$http$Http$resolve = F2(
 			case 3:
 				var metadata = response.a;
 				return elm$core$Result$Err(
-					elm$http$Http$BadStatus(metadata.aD));
+					elm$http$Http$BadStatus(metadata.aE));
 			default:
 				var body = response.b;
 				return A2(
@@ -6117,13 +6149,18 @@ var elm$http$Http$expectJson = F2(
 						A2(elm$json$Json$Decode$decodeString, decoder, string));
 				}));
 	});
-var elm$http$Http$emptyBody = _Http_emptyBody;
+var elm$http$Http$jsonBody = function (value) {
+	return A2(
+		_Http_pair,
+		'application/json',
+		A2(elm$json$Json$Encode$encode, 0, value));
+};
 var elm$http$Http$Request = function (a) {
 	return {$: 1, a: a};
 };
 var elm$http$Http$State = F2(
 	function (reqs, subs) {
-		return {az: reqs, aE: subs};
+		return {aA: reqs, aF: subs};
 	});
 var elm$http$Http$init = elm$core$Task$succeed(
 	A2(elm$http$Http$State, elm$core$Dict$empty, _List_Nil));
@@ -6165,7 +6202,7 @@ var elm$http$Http$updateReqs = F3(
 					return A2(
 						elm$core$Task$andThen,
 						function (pid) {
-							var _n4 = req.l;
+							var _n4 = req.aK;
 							if (_n4.$ === 1) {
 								return A3(elm$http$Http$updateReqs, router, otherCmds, reqs);
 							} else {
@@ -6195,7 +6232,7 @@ var elm$http$Http$onEffects = F4(
 				return elm$core$Task$succeed(
 					A2(elm$http$Http$State, reqs, subs));
 			},
-			A3(elm$http$Http$updateReqs, router, cmds, state.az));
+			A3(elm$http$Http$updateReqs, router, cmds, state.aA));
 	});
 var elm$core$List$maybeCons = F3(
 	function (f, mx, xs) {
@@ -6238,7 +6275,7 @@ var elm$http$Http$onSelfMsg = F3(
 				A2(
 					elm$core$List$filterMap,
 					A3(elm$http$Http$maybeSend, router, tracker, progress),
-					state.aE)));
+					state.aF)));
 	});
 var elm$http$Http$Cancel = function (a) {
 	return {$: 0, a: a};
@@ -6252,14 +6289,14 @@ var elm$http$Http$cmdMap = F2(
 			var r = cmd.a;
 			return elm$http$Http$Request(
 				{
-					B: r.B,
-					aJ: r.aJ,
-					aM: A2(_Http_mapExpect, func, r.aM),
-					f: r.f,
-					j: r.j,
-					k: r.k,
-					l: r.l,
-					a5: r.a5
+					y: r.y,
+					ae: r.ae,
+					aj: A2(_Http_mapExpect, func, r.aj),
+					al: r.al,
+					ap: r.ap,
+					aH: r.aH,
+					aK: r.aK,
+					aL: r.aL
 				});
 		}
 	});
@@ -6282,16 +6319,96 @@ var elm$http$Http$subscription = _Platform_leaf('Http');
 var elm$http$Http$request = function (r) {
 	return elm$http$Http$command(
 		elm$http$Http$Request(
-			{B: false, aJ: r.aJ, aM: r.aM, f: r.f, j: r.j, k: r.k, l: r.l, a5: r.a5}));
+			{y: false, ae: r.ae, aj: r.aj, al: r.al, ap: r.ap, aH: r.aH, aK: r.aK, aL: r.aL}));
 };
-var elm$http$Http$get = function (r) {
+var elm$json$Json$Decode$list = _Json_decodeList;
+var author$project$Discussion$getMessagesCmd = function (query) {
 	return elm$http$Http$request(
-		{aJ: elm$http$Http$emptyBody, aM: r.aM, f: _List_Nil, j: 'GET', k: elm$core$Maybe$Nothing, l: elm$core$Maybe$Nothing, a5: r.a5});
+		{
+			ae: elm$http$Http$jsonBody(
+				author$project$Discussion$encodeMessagesQuery(query)),
+			aj: A2(
+				elm$http$Http$expectJson,
+				author$project$Discussion$MessagesList,
+				elm$json$Json$Decode$list(author$project$Discussion$decoderMessage)),
+			al: _List_fromArray(
+				[author$project$Discussion$apiKeyHeader]),
+			ap: 'GET',
+			aH: elm$core$Maybe$Nothing,
+			aK: elm$core$Maybe$Nothing,
+			aL: author$project$Discussion$messageApiUrl
+		});
 };
-var author$project$Main$getRandomCatGif = elm$http$Http$get(
-	{
-		aM: A2(elm$http$Http$expectJson, author$project$Main$GotGif, author$project$Main$gifDecoder),
-		a5: 'https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=fuck'
+var author$project$Discussion$MessagePosted = function (a) {
+	return {$: 0, a: a};
+};
+var elm$json$Json$Encode$int = _Json_wrap;
+var elm$json$Json$Encode$string = _Json_wrap;
+var elm$time$Time$posixToMillis = function (_n0) {
+	var millis = _n0;
+	return millis;
+};
+var author$project$Discussion$encodeMessage = function (message) {
+	return elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'username',
+				elm$json$Json$Encode$string(message.aM)),
+				_Utils_Tuple2(
+				'timestamp',
+				elm$json$Json$Encode$int(
+					elm$time$Time$posixToMillis(message.aI))),
+				_Utils_Tuple2(
+				'topic',
+				elm$json$Json$Encode$string(message.aJ)),
+				_Utils_Tuple2(
+				'message',
+				elm$json$Json$Encode$string(message.ao))
+			]));
+};
+var author$project$Discussion$postMessageCmd = function (message) {
+	return elm$http$Http$request(
+		{
+			ae: elm$http$Http$jsonBody(
+				author$project$Discussion$encodeMessage(message)),
+			aj: A2(elm$http$Http$expectJson, author$project$Discussion$MessagePosted, author$project$Discussion$decoderMessage),
+			al: _List_fromArray(
+				[author$project$Discussion$apiKeyHeader]),
+			ap: 'POST',
+			aH: elm$core$Maybe$Nothing,
+			aK: elm$core$Maybe$Nothing,
+			aL: author$project$Discussion$messageApiUrl
+		});
+};
+var author$project$Main$DiscussionMsg = function (a) {
+	return {$: 2, a: a};
+};
+var author$project$Discussion$httpErrorToString = function (error) {
+	switch (error.$) {
+		case 0:
+			var string = error.a;
+			return 'Bad URL ' + string;
+		case 1:
+			return 'Timeout';
+		case 2:
+			return 'Network error';
+		case 3:
+			var status = error.a;
+			return 'Bad status' + elm$core$String$fromInt(status);
+		default:
+			var body = error.a;
+			return 'Bad body' + body;
+	}
+};
+var author$project$Main$restDbError = F3(
+	function (description, httpError, time) {
+		return {
+			ao: author$project$Discussion$httpErrorToString(httpError),
+			aI: time,
+			aJ: description,
+			aM: 'RestDB communication'
+		};
 	});
 var author$project$RageGuy$RageUp = function (a) {
 	return {$: 1, a: a};
@@ -6467,14 +6584,14 @@ var author$project$RageGuy$framesDefinition = function (mood) {
 						reverse(downToUp)
 					]));
 			return {
-				t: staticFrames,
-				u: elm$core$Dict$fromList(transitions)
+				p: staticFrames,
+				q: elm$core$Dict$fromList(transitions)
 			};
 		case 1:
 			return {
-				t: _List_fromArray(
+				p: _List_fromArray(
 					[0, 1, 2]),
-				u: elm$core$Dict$fromList(
+				q: elm$core$Dict$fromList(
 					A2(rangeAndSequence, 3, 6))
 			};
 		case 2:
@@ -6513,8 +6630,8 @@ var author$project$RageGuy$framesDefinition = function (mood) {
 						upToDown
 					]));
 			return {
-				t: staticFrames,
-				u: elm$core$Dict$fromList(transitions)
+				p: staticFrames,
+				q: elm$core$Dict$fromList(transitions)
 			};
 		case 3:
 			var transitions = elm$core$List$concat(
@@ -6551,8 +6668,8 @@ var author$project$RageGuy$framesDefinition = function (mood) {
 						closesToOpen
 					]));
 			return {
-				t: staticFrames,
-				u: elm$core$Dict$fromList(transitions)
+				p: staticFrames,
+				q: elm$core$Dict$fromList(transitions)
 			};
 		case 4:
 			var transitions = elm$core$List$concat(
@@ -6589,14 +6706,14 @@ var author$project$RageGuy$framesDefinition = function (mood) {
 						closesToOpen
 					]));
 			return {
-				t: staticFrames,
-				u: elm$core$Dict$fromList(transitions)
+				p: staticFrames,
+				q: elm$core$Dict$fromList(transitions)
 			};
 		default:
 			return {
-				t: _List_fromArray(
+				p: _List_fromArray(
 					[0, 1, 2]),
-				u: elm$core$Dict$empty
+				q: elm$core$Dict$empty
 			};
 	}
 };
@@ -6605,7 +6722,7 @@ var author$project$RageGuy$maybeMoodTransitionFrameAfter = F2(
 		return A2(
 			elm$core$Dict$get,
 			lastFrame,
-			author$project$RageGuy$framesDefinition(mood).u);
+			author$project$RageGuy$framesDefinition(mood).q);
 	});
 var elm$core$Array$fromListHelp = F3(
 	function (list, nodeList, nodeListSize) {
@@ -6701,7 +6818,7 @@ var elm$core$Maybe$withDefault = F2(
 var author$project$RageGuy$relativeFrameForStaticMood = F2(
 	function (clock, mood) {
 		var cycle = elm$core$Array$fromList(
-			author$project$RageGuy$framesDefinition(mood).t);
+			author$project$RageGuy$framesDefinition(mood).p);
 		return A2(
 			elm$core$Maybe$withDefault,
 			0,
@@ -6716,41 +6833,41 @@ var author$project$RageGuy$relativeFrameForStaticMood = F2(
 var author$project$RageGuy$update = F2(
 	function (msg, model) {
 		if (!msg.$) {
-			var targetMood = A2(author$project$RageGuy$angerToMood, model.Q, model.M);
+			var targetMood = A2(author$project$RageGuy$angerToMood, model.N, model.J);
 			var newModel = function () {
-				if (model.L) {
-					if (A2(author$project$RageGuy$isMoodBefore, model.aT, targetMood)) {
-						var _n1 = A2(author$project$RageGuy$maybeMoodTransitionFrameAfter, model.x, model.aT);
+				if (model.I) {
+					if (A2(author$project$RageGuy$isMoodBefore, model.aX, targetMood)) {
+						var _n1 = A2(author$project$RageGuy$maybeMoodTransitionFrameAfter, model.t, model.aX);
 						if (!_n1.$) {
 							var nextFrame = _n1.a;
 							return _Utils_update(
 								model,
-								{x: nextFrame});
+								{t: nextFrame});
 						} else {
 							return _Utils_update(
 								model,
 								{
-									n: 0,
-									L: false,
-									x: 0,
-									aT: author$project$RageGuy$nextMood(model.aT)
+									k: 0,
+									I: false,
+									t: 0,
+									aX: author$project$RageGuy$nextMood(model.aX)
 								});
 						}
 					} else {
 						return model;
 					}
 				} else {
-					if (_Utils_eq(model.aT, targetMood)) {
+					if (_Utils_eq(model.aX, targetMood)) {
 						return _Utils_update(
 							model,
 							{
-								n: model.n + 1,
-								x: A2(author$project$RageGuy$relativeFrameForStaticMood, model.n, model.aT)
+								k: model.k + 1,
+								t: A2(author$project$RageGuy$relativeFrameForStaticMood, model.k, model.aX)
 							});
 					} else {
 						return _Utils_update(
 							model,
-							{L: true});
+							{I: true});
 					}
 				}
 			}();
@@ -6759,7 +6876,7 @@ var author$project$RageGuy$update = F2(
 			var amount = msg.a;
 			return _Utils_update(
 				model,
-				{Q: model.Q + amount});
+				{N: model.N + amount});
 		}
 	});
 var author$project$SwearWords$translationList = _List_fromArray(
@@ -7115,14 +7232,14 @@ var author$project$Main$updatedModelRage = F5(
 				2.0e-3 * (elm$core$String$length(newString) - elm$core$String$length(oldString)));
 			var severityOfMaybeSwearWordAdded = A2(author$project$SwearWords$severityOfMaybeSwearWordAdded, oldString, newString);
 			var addedSeverity = severityOfMaybeSwearWordAdded + severityOfMaybeCharsAdded;
-			var angerFlash = A2(elm$core$Basics$min, 4.0, (5 * addedSeverity) + model.h);
+			var angerFlash = A2(elm$core$Basics$min, 4.0, (5 * addedSeverity) + model.g);
 			var rageGuy = A2(
 				author$project$RageGuy$update,
 				author$project$RageGuy$RageUp(addedSeverity),
 				model.e);
 			var model_ = _Utils_update(
 				model,
-				{h: angerFlash, e: rageGuy});
+				{g: angerFlash, e: rageGuy});
 			var model__ = A2(stringSetter, newString, model_);
 			return model__;
 		} else {
@@ -7130,6 +7247,7 @@ var author$project$Main$updatedModelRage = F5(
 		}
 	});
 var author$project$RageGuy$Tick = {$: 0};
+var elm$core$Platform$Cmd$map = _Platform_map;
 var elm$core$Platform$Cmd$batch = _Platform_batch;
 var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
 var elm$core$String$isEmpty = function (string) {
@@ -7138,111 +7256,90 @@ var elm$core$String$isEmpty = function (string) {
 var author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
-			case 8:
-				if (!msg.a.$) {
-					var url = msg.a.a;
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								o: A2(
-									elm$core$List$cons,
-									{
-										aS: url,
-										a1: elm$time$Time$millisToPosix(0),
-										a3: 'Topic',
-										a6: 'Cat'
-									},
-									model.o)
-							}),
-						elm$core$Platform$Cmd$none);
-				} else {
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								o: A2(
-									elm$core$List$cons,
-									{
-										aS: 'Error reading cat',
-										a1: elm$time$Time$millisToPosix(0),
-										a3: 'Topic',
-										a6: 'Error'
-									},
-									model.o)
-							}),
-						elm$core$Platform$Cmd$none);
-				}
 			case 0:
 				return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
-			case 6:
+			case 7:
 				var time = msg.a;
 				var rageGuy = A2(author$project$RageGuy$update, author$project$RageGuy$Tick, model.e);
-				var angerFlash = A2(elm$core$Basics$max, 0.0, model.h - 0.2);
+				var angerFlash = A2(elm$core$Basics$max, 0.0, model.g - 0.2);
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{h: angerFlash, e: rageGuy, R: time}),
+						{g: angerFlash, e: rageGuy, w: time}),
 					elm$core$Platform$Cmd$none);
-			case 7:
+			case 8:
 				var newZone = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{X: newZone}),
+						{T: newZone}),
 					elm$core$Platform$Cmd$none);
 			case 1:
 				var rageGuyMsg = msg.a;
-				var oldAnger = model.e.Q;
+				var oldAnger = model.e.N;
 				var newRageGuy = A2(author$project$RageGuy$update, rageGuyMsg, model.e);
-				var angerDiff = newRageGuy.Q - oldAnger;
+				var angerDiff = newRageGuy.N - oldAnger;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{h: (model.h + angerDiff) * 10.0, e: newRageGuy}),
+						{g: (model.g + angerDiff) * 10.0, e: newRageGuy}),
 					elm$core$Platform$Cmd$none);
-			case 2:
+			case 3:
 				var rageGuy = model.e;
-				var newModel = function () {
-					if ((rageGuy.Q >= 1.0) && ((!rageGuy.M) && (!elm$core$String$isEmpty(model.aS)))) {
-						var user = model.a6;
-						var newMessage = A4(author$project$Discussion$Message, user, model.R, model.a3, model.aS);
-						var newDiscussion = A2(elm$core$List$cons, newMessage, model.o);
-						return _Utils_update(
+				var result = function () {
+					if ((rageGuy.N >= 1.0) && ((!rageGuy.J) && (!elm$core$String$isEmpty(model.ao)))) {
+						var user = model.aM;
+						var newMessage = A4(author$project$Discussion$Message, user, model.w, model.aJ, model.ao);
+						var newDiscussion = A2(elm$core$List$cons, newMessage, model.h);
+						var newModel = _Utils_update(
 							model,
 							{
-								o: newDiscussion,
-								aS: '',
+								h: newDiscussion,
+								ao: '',
 								e: _Utils_update(
 									rageGuy,
-									{M: true}),
-								a3: ''
+									{J: true}),
+								aJ: ''
 							});
+						return _Utils_Tuple2(
+							newModel,
+							A2(
+								elm$core$Platform$Cmd$map,
+								author$project$Main$DiscussionMsg,
+								author$project$Discussion$postMessageCmd(newMessage)));
 					} else {
-						if (rageGuy.M) {
-							return _Utils_update(
-								model,
-								{
-									h: 5.0,
-									e: _Utils_update(
-										rageGuy,
-										{M: false, aT: 0, Q: 0.0})
-								});
+						if (rageGuy.J) {
+							return _Utils_Tuple2(
+								_Utils_update(
+									model,
+									{
+										g: 5.0,
+										e: _Utils_update(
+											rageGuy,
+											{J: false, aX: 0, N: 0.0})
+									}),
+								elm$core$Platform$Cmd$none);
 						} else {
-							return _Utils_update(
-								model,
-								{
-									h: model.h + 1.0,
-									e: A2(
-										author$project$RageGuy$update,
-										author$project$RageGuy$RageUp(5.0e-2),
-										model.e)
-								});
+							return _Utils_Tuple2(
+								_Utils_update(
+									model,
+									{
+										g: model.g + 1.0,
+										e: A2(
+											author$project$RageGuy$update,
+											author$project$RageGuy$RageUp(5.0e-2),
+											model.e)
+									}),
+								A2(
+									elm$core$Platform$Cmd$map,
+									author$project$Main$DiscussionMsg,
+									author$project$Discussion$getMessagesCmd(
+										{})));
 						}
 					}
 				}();
-				return _Utils_Tuple2(newModel, author$project$Main$getRandomCatGif);
-			case 5:
+				return result;
+			case 6:
 				var message = msg.a;
 				return _Utils_Tuple2(
 					A5(
@@ -7250,17 +7347,17 @@ var author$project$Main$update = F2(
 						model,
 						2000,
 						function ($) {
-							return $.aS;
+							return $.ao;
 						},
 						F2(
 							function (string, m) {
 								return _Utils_update(
 									m,
-									{aS: string});
+									{ao: string});
 							}),
 						message),
 					elm$core$Platform$Cmd$none);
-			case 4:
+			case 5:
 				var topic = msg.a;
 				return _Utils_Tuple2(
 					A5(
@@ -7268,37 +7365,83 @@ var author$project$Main$update = F2(
 						model,
 						100,
 						function ($) {
-							return $.a3;
+							return $.aJ;
 						},
 						F2(
 							function (string, m) {
 								return _Utils_update(
 									m,
-									{a3: string});
+									{aJ: string});
 							}),
 						topic),
 					elm$core$Platform$Cmd$none);
-			default:
+			case 4:
 				var newUser = msg.a;
 				return (elm$core$String$length(newUser) < 30) ? _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{a6: newUser}),
+						{aM: newUser}),
 					elm$core$Platform$Cmd$none) : _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+			default:
+				if (!msg.a.$) {
+					if (!msg.a.a.$) {
+						var message = msg.a.a.a;
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									h: A2(elm$core$List$cons, message, model.h)
+								}),
+							elm$core$Platform$Cmd$none);
+					} else {
+						var error = msg.a.a.a;
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									h: A2(
+										elm$core$List$cons,
+										A3(author$project$Main$restDbError, 'Error while posting message', error, model.w),
+										model.h)
+								}),
+							elm$core$Platform$Cmd$none);
+					}
+				} else {
+					if (!msg.a.a.$) {
+						var messages = msg.a.a.a;
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{h: messages}),
+							elm$core$Platform$Cmd$none);
+					} else {
+						var error = msg.a.a.a;
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									h: A2(
+										elm$core$List$cons,
+										A3(author$project$Main$restDbError, 'Error while retrieving messages list', error, model.w),
+										model.h)
+								}),
+							elm$core$Platform$Cmd$none);
+					}
+				}
 		}
 	});
-var author$project$Main$ClickRageGuy = {$: 2};
+var author$project$Main$ClickRageGuy = {$: 3};
 var author$project$Main$MessageUpdate = function (a) {
-	return {$: 5, a: a};
+	return {$: 6, a: a};
 };
 var author$project$Main$RageGuyMsg = function (a) {
 	return {$: 1, a: a};
 };
 var author$project$Main$TopicUpdate = function (a) {
-	return {$: 4, a: a};
+	return {$: 5, a: a};
 };
 var author$project$Main$UserUpdate = function (a) {
-	return {$: 3, a: a};
+	return {$: 4, a: a};
 };
 var author$project$RageGuy$rageGuyImageWidth = 540;
 var author$project$RageGuy$startFrame = function (mood) {
@@ -7446,7 +7589,6 @@ var elm$core$List$take = F2(
 	function (n, list) {
 		return A3(elm$core$List$takeFast, 0, n, list);
 	});
-var elm$json$Json$Decode$map = _Json_map1;
 var elm$json$Json$Decode$map2 = _Json_map2;
 var elm$json$Json$Decode$succeed = _Json_succeed;
 var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
@@ -7485,7 +7627,7 @@ var author$project$RageGuy$view = function (model) {
 				A2(
 					elm$core$Basics$modBy,
 					elm$core$Array$length(randomShifts),
-					n + model.n),
+					n + model.k),
 				randomShifts));
 	};
 	var numberOfFFFRows = 5;
@@ -7536,7 +7678,7 @@ var author$project$RageGuy$view = function (model) {
 					}),
 				texts));
 	};
-	var index = author$project$RageGuy$startFrame(model.aT) + model.x;
+	var index = author$project$RageGuy$startFrame(model.aX) + model.t;
 	var leftSpritePosition = elm$core$String$fromInt((-author$project$RageGuy$rageGuyImageWidth) * index) + 'px';
 	var height = 360;
 	var fffuuuuTextCut = function (limit) {
@@ -7553,8 +7695,8 @@ var author$project$RageGuy$view = function (model) {
 			},
 			A2(elm$core$List$range, 0, numberOfFFFRows * 2));
 	};
-	var fffuuuTextDivs = (model.aT === 5) ? textDivs(
-		fffuuuuTextCut(model.n * 3)) : _List_Nil;
+	var fffuuuTextDivs = (model.aX === 5) ? textDivs(
+		fffuuuuTextCut(model.k * 3)) : _List_Nil;
 	return A2(
 		elm$html$Html$div,
 		_List_fromArray(
@@ -7590,15 +7732,15 @@ var author$project$Utils$toHex = function (n) {
 };
 var author$project$Utils$colorToHex = function (cl) {
 	var _n0 = cl;
-	var red = _n0.ad;
-	var green = _n0._;
-	var blue = _n0.Z;
-	var alpha = _n0.Y;
+	var red = _n0._;
+	var green = _n0.W;
+	var blue = _n0.V;
+	var alpha = _n0.U;
 	return '#' + (author$project$Utils$toHex(red) + (author$project$Utils$toHex(green) + author$project$Utils$toHex(blue)));
 };
 var author$project$Utils$rgb = F3(
 	function (red, green, blue) {
-		return {Y: 255, Z: blue, _: green, ad: red};
+		return {U: 255, V: blue, W: green, _: red};
 	});
 var elm$core$Basics$cos = _Basics_cos;
 var elm$core$Basics$round = _Basics_round;
@@ -7634,7 +7776,6 @@ var elm$html$Html$map = elm$virtual_dom$VirtualDom$map;
 var elm$html$Html$p = _VirtualDom_node('p');
 var elm$html$Html$section = _VirtualDom_node('section');
 var elm$html$Html$textarea = _VirtualDom_node('textarea');
-var elm$json$Json$Encode$string = _Json_wrap;
 var elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
 		return A2(
@@ -7700,10 +7841,6 @@ var elm$html$Html$Events$onInput = function (tagger) {
 			elm$html$Html$Events$alwaysStop,
 			A2(elm$json$Json$Decode$map, tagger, elm$html$Html$Events$targetValue)));
 };
-var elm$time$Time$posixToMillis = function (_n0) {
-	var millis = _n0;
-	return millis;
-};
 var elm$time$Time$flooredDiv = F2(
 	function (numerator, denominator) {
 		return elm$core$Basics$floor(numerator / denominator);
@@ -7717,8 +7854,8 @@ var elm$time$Time$toAdjustedMinutesHelp = F3(
 			} else {
 				var era = eras.a;
 				var olderEras = eras.b;
-				if (_Utils_cmp(era.af, posixMinutes) < 0) {
-					return posixMinutes + era.aq;
+				if (_Utils_cmp(era.ab, posixMinutes) < 0) {
+					return posixMinutes + era.ar;
 				} else {
 					var $temp$defaultOffset = defaultOffset,
 						$temp$posixMinutes = posixMinutes,
@@ -7754,15 +7891,15 @@ var elm$time$Time$toCivil = function (minutes) {
 	var month = mp + ((mp < 10) ? 3 : (-9));
 	var year = yearOfEra + (era * 400);
 	return {
-		aj: (dayOfYear - ((((153 * mp) + 2) / 5) | 0)) + 1,
-		ap: month,
-		aH: year + ((month <= 2) ? 1 : 0)
+		ag: (dayOfYear - ((((153 * mp) + 2) / 5) | 0)) + 1,
+		aq: month,
+		aO: year + ((month <= 2) ? 1 : 0)
 	};
 };
 var elm$time$Time$toDay = F2(
 	function (zone, time) {
 		return elm$time$Time$toCivil(
-			A2(elm$time$Time$toAdjustedMinutes, zone, time)).aj;
+			A2(elm$time$Time$toAdjustedMinutes, zone, time)).ag;
 	});
 var elm$time$Time$toHour = F2(
 	function (zone, time) {
@@ -7796,7 +7933,7 @@ var elm$time$Time$Sep = 8;
 var elm$time$Time$toMonth = F2(
 	function (zone, time) {
 		var _n0 = elm$time$Time$toCivil(
-			A2(elm$time$Time$toAdjustedMinutes, zone, time)).ap;
+			A2(elm$time$Time$toAdjustedMinutes, zone, time)).aq;
 		switch (_n0) {
 			case 1:
 				return 0;
@@ -7837,7 +7974,7 @@ var elm$time$Time$toSecond = F2(
 var elm$time$Time$toYear = F2(
 	function (zone, time) {
 		return elm$time$Time$toCivil(
-			A2(elm$time$Time$toAdjustedMinutes, zone, time)).aH;
+			A2(elm$time$Time$toAdjustedMinutes, zone, time)).aO;
 	});
 var author$project$Main$view = function (model) {
 	var zeroPad2 = function (x) {
@@ -7849,7 +7986,7 @@ var author$project$Main$view = function (model) {
 			[
 				elm$html$Html$Attributes$type_('Text'),
 				elm$html$Html$Attributes$placeholder('Your  name'),
-				elm$html$Html$Attributes$value(model.a6),
+				elm$html$Html$Attributes$value(model.aM),
 				elm$html$Html$Events$onInput(author$project$Main$UserUpdate)
 			]),
 		_List_Nil);
@@ -7859,7 +7996,7 @@ var author$project$Main$view = function (model) {
 			[
 				elm$html$Html$Attributes$type_('Text'),
 				elm$html$Html$Attributes$placeholder('Topic'),
-				elm$html$Html$Attributes$value(model.a3),
+				elm$html$Html$Attributes$value(model.aJ),
 				elm$html$Html$Events$onInput(author$project$Main$TopicUpdate)
 			]),
 		_List_Nil);
@@ -7923,7 +8060,7 @@ var author$project$Main$view = function (model) {
 			[
 				A2(elm$html$Html$Attributes$style, 'height', '200'),
 				elm$html$Html$Attributes$placeholder('Enter your hate message. The more you swear the angrier Rage guy becomes! Click him to bully him even more, make him rage to have your message posted!'),
-				elm$html$Html$Attributes$value(model.aS),
+				elm$html$Html$Attributes$value(model.ao),
 				elm$html$Html$Events$onInput(author$project$Main$MessageUpdate)
 			]),
 		_List_Nil);
@@ -7951,7 +8088,7 @@ var author$project$Main$view = function (model) {
 					_List_Nil,
 					_List_fromArray(
 						[
-							elm$html$Html$text(message.a6)
+							elm$html$Html$text(message.aM)
 						])),
 					elm$html$Html$text(' '),
 					A2(
@@ -7960,7 +8097,7 @@ var author$project$Main$view = function (model) {
 					_List_fromArray(
 						[
 							elm$html$Html$text(
-							A2(formatTime, model.X, message.a1))
+							A2(formatTime, model.T, message.aI))
 						])),
 					elm$html$Html$text(' '),
 					A2(
@@ -7968,20 +8105,20 @@ var author$project$Main$view = function (model) {
 					_List_Nil,
 					_List_fromArray(
 						[
-							elm$html$Html$text(message.a3)
+							elm$html$Html$text(message.aJ)
 						])),
 					A2(
 					elm$html$Html$p,
 					_List_Nil,
 					_List_fromArray(
 						[
-							elm$html$Html$text(message.aS)
+							elm$html$Html$text(message.ao)
 						])),
 					A2(
 					elm$html$Html$img,
 					_List_fromArray(
 						[
-							elm$html$Html$Attributes$src(message.aS)
+							elm$html$Html$Attributes$src(message.ao)
 						]),
 					_List_Nil)
 				]));
@@ -8025,7 +8162,7 @@ var author$project$Main$view = function (model) {
 			html);
 	};
 	var angerColor = function () {
-		var now = elm$time$Time$posixToMillis(model.R);
+		var now = elm$time$Time$posixToMillis(model.w);
 		var interpolate = F3(
 			function (start, end, ratio) {
 				return elm$core$Basics$round(start + (ratio * (end - start)));
@@ -8034,7 +8171,7 @@ var author$project$Main$view = function (model) {
 			function (a, b, c, d, p) {
 				return (p < 0.0) ? a : ((p < 1.0) ? A3(interpolate, a, b, p) : ((p < 2.0) ? A3(interpolate, b, c, p - 1.0) : ((p < 3.0) ? A3(interpolate, c, d, p - 2.0) : d)));
 			});
-		var anger = (model.e.Q < 1.0) ? model.h : ((!model.e.M) ? (((1.5 + elm$core$Basics$sin(now / 500.0)) + (0.5 * elm$core$Basics$sin(0.3 + (now / 400.0)))) + (0.4 * elm$core$Basics$cos(0.8 + (now / 300.0)))) : (((1.0 + elm$core$Basics$sin(now / 500.0)) + (0.5 * elm$core$Basics$sin(0.3 + (now / 100.0)))) + (0.4 * elm$core$Basics$cos(0.8 + (now / 200.0)))));
+		var anger = (model.e.N < 1.0) ? model.g : ((!model.e.J) ? (((1.5 + elm$core$Basics$sin(now / 500.0)) + (0.5 * elm$core$Basics$sin(0.3 + (now / 400.0)))) + (0.4 * elm$core$Basics$cos(0.8 + (now / 300.0)))) : (((1.0 + elm$core$Basics$sin(now / 500.0)) + (0.5 * elm$core$Basics$sin(0.3 + (now / 100.0)))) + (0.4 * elm$core$Basics$cos(0.8 + (now / 200.0)))));
 		var angerColorComponent = F4(
 			function (a, b, c, d) {
 				return A5(interpolate3, a, b, c, d, anger);
@@ -8089,7 +8226,7 @@ var author$project$Main$view = function (model) {
 						A2(
 							elm$core$List$intersperse,
 							A2(elm$html$Html$hr, _List_Nil, _List_Nil),
-							A2(elm$core$List$map, viewMessage, model.o)))
+							A2(elm$core$List$map, viewMessage, model.h)))
 					]))
 			]));
 };
@@ -8129,7 +8266,7 @@ var elm$core$String$left = F2(
 var elm$core$String$toInt = _String_toInt;
 var elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {am: fragment, an: host, ar: path, at: port_, aw: protocol, ax: query};
+		return {ak: fragment, am: host, as: path, au: port_, ax: protocol, ay: query};
 	});
 var elm$url$Url$chompBeforePath = F5(
 	function (protocol, path, params, frag, str) {
@@ -8235,6 +8372,6 @@ var elm$url$Url$fromString = function (str) {
 };
 var elm$browser$Browser$element = _Browser_element;
 var author$project$Main$main = elm$browser$Browser$element(
-	{aR: author$project$Main$init, a0: author$project$Main$subscriptions, a4: author$project$Main$update, a7: author$project$Main$view});
+	{aW: author$project$Main$init, a4: author$project$Main$subscriptions, a6: author$project$Main$update, a7: author$project$Main$view});
 _Platform_export({'Main':{'init':author$project$Main$main(
 	elm$json$Json$Decode$succeed(0))(0)}});}(this));
