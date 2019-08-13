@@ -1,4 +1,4 @@
-module Discussion exposing (Message, MessagesQuery, Msg(..), User, getMessagesCmd, httpErrorToString, postMessageCmd)
+module Discussion exposing (Message, MessagesQuery, Msg(..), User, fetchMessagesCmd, httpErrorToString, postMessageCmd)
 
 import Http
 import Json.Decode as D
@@ -74,17 +74,16 @@ type alias MessagesQuery =
     {}
 
 
-encodeMessagesQuery : MessagesQuery -> E.Value
-encodeMessagesQuery query =
-    E.object []
-
-
-getMessagesCmd query =
+fetchMessagesCmd query =
+    let
+        url =
+            messageApiUrl ++ "?q={}&h={\"$orderby\": {\"timestamp\": -1}, \"$max\": 200}"
+    in
     Http.request
         { method = "GET"
         , headers = [ apiKeyHeader ]
-        , url = messageApiUrl
-        , body = Http.jsonBody (encodeMessagesQuery query)
+        , url = url
+        , body = Http.jsonBody (E.object [])
         , expect = Http.expectJson MessagesList (D.list decoderMessage)
         , timeout = Nothing
         , tracker = Nothing
@@ -100,7 +99,7 @@ httpErrorToString error =
             "Timeout"
 
         Http.NetworkError ->
-            "Network xerror"  -- TODO
+            "Network error"
 
         Http.BadStatus status ->
             "Bad status" ++ String.fromInt status

@@ -36,6 +36,7 @@ type alias Model =
     , discussion : List Discussion.Message
     , zone : Time.Zone
     , time : Time.Posix
+    , nextFetchMessages : Time.Posix
     }
 
 
@@ -48,6 +49,7 @@ initialModel =
     , discussion = []
     , time = Time.millisToPosix 0
     , zone = Time.utc
+    , nextFetchMessages = Time.millisToPosix 0
     }
 
 
@@ -130,8 +132,20 @@ update msg model =
 
                 angerFlash =
                     model.angerFlash - 0.2 |> Basics.max 0.0
+
+                newModel =
+                    { model | time = time, rageGuy = rageGuy, angerFlash = angerFlash }
+
+                timePlusSeconds seconds =
+                    Time.millisToPosix (Time.posixToMillis time + (seconds * 1000))
             in
-            ( { model | time = time, rageGuy = rageGuy, angerFlash = angerFlash }, Cmd.none )
+            if Time.posixToMillis time > Time.posixToMillis model.nextFetchMessages then
+                ( { newModel | nextFetchMessages = timePlusSeconds 30 }
+                , Cmd.map DiscussionMsg (Discussion.fetchMessagesCmd {})
+                )
+
+            else
+                ( newModel, Cmd.none )
 
         AdjustTimeZone newZone ->
             ( { model | zone = newZone }, Cmd.none )
@@ -191,7 +205,7 @@ update msg model =
                             | angerFlash = model.angerFlash + 1.0
                             , rageGuy = RageGuy.update (RageGuy.RageUp 0.05) model.rageGuy
                           }
-                        , Cmd.map DiscussionMsg (Discussion.getMessagesCmd {})
+                        , Cmd.none
                         )
             in
             result
@@ -398,7 +412,6 @@ view model =
                 , text " "
                 , b [] [ text message.topic ]
                 , p [] [ text message.message ]
-                , img [ A.src message.message ] []
                 ]
 
         container html =
