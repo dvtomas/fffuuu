@@ -7225,13 +7225,11 @@ var author$project$Main$updatedModelRage = F5(
 			elm$core$String$length(newString),
 			maxLength) < 0) {
 			var oldString = stringGetter(model);
-			var severityOfMaybeCharsAdded = A2(
-				elm$core$Basics$max,
-				0,
-				2.0e-3 * (elm$core$String$length(newString) - elm$core$String$length(oldString)));
 			var severityOfMaybeSwearWordAdded = A2(author$project$SwearWords$severityOfMaybeSwearWordAdded, oldString, newString);
+			var charsAdded = elm$core$String$length(newString) - elm$core$String$length(oldString);
+			var severityOfMaybeCharsAdded = A2(elm$core$Basics$max, 0, 2.0e-3 * charsAdded);
 			var addedSeverity = severityOfMaybeSwearWordAdded + severityOfMaybeCharsAdded;
-			var angerFlash = A2(elm$core$Basics$min, 4.0, (5 * addedSeverity) + model.g);
+			var angerFlash = A2(elm$core$Basics$min, 4.0, ((5 * addedSeverity) + model.g) + (0.2 * charsAdded));
 			var rageGuy = A2(
 				author$project$RageGuy$update,
 				author$project$RageGuy$RageUp(addedSeverity),

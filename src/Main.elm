@@ -87,14 +87,15 @@ updatedModelRage model maxLength stringGetter stringSetter newString =
             severityOfMaybeSwearWordAdded =
                 SwearWords.severityOfMaybeSwearWordAdded oldString newString
 
-            severityOfMaybeCharsAdded =
-                max 0 (0.002 * toFloat (String.length newString - String.length oldString))
+            charsAdded = toFloat (String.length newString - String.length oldString)
+
+            severityOfMaybeCharsAdded = max 0 (0.002 * charsAdded)
 
             addedSeverity =
                 severityOfMaybeSwearWordAdded + severityOfMaybeCharsAdded
 
             angerFlash =
-                (5 * addedSeverity + model.angerFlash) |> Basics.min 4.0
+                (5 * addedSeverity + model.angerFlash) + 0.2 * charsAdded  |> Basics.min 4.0
 
             rageGuy =
                 RageGuy.update (RageGuy.RageUp addedSeverity) model.rageGuy
