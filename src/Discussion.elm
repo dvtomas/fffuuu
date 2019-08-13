@@ -32,7 +32,7 @@ type Msg
 
 
 apiKeyHeader =
-    Http.header "x-apikey" "12745cc133246d659d53960af2463940e69d7"
+    Http.header "x-apikey" "5d4edcc758a35b31adeba6a8"
 
 
 messageApiUrl =
@@ -100,7 +100,7 @@ httpErrorToString error =
             "Timeout"
 
         Http.NetworkError ->
-            "Network error"
+            "Network xerror"  -- TODO
 
         Http.BadStatus status ->
             "Bad status" ++ String.fromInt status

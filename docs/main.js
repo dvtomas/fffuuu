@@ -5634,7 +5634,7 @@ var elm$http$Http$Header = F2(
 		return {$: 0, a: a, b: b};
 	});
 var elm$http$Http$header = elm$http$Http$Header;
-var author$project$Discussion$apiKeyHeader = A2(elm$http$Http$header, 'x-apikey', '12745cc133246d659d53960af2463940e69d7');
+var author$project$Discussion$apiKeyHeader = A2(elm$http$Http$header, 'x-apikey', '5d4edcc758a35b31adeba6a8');
 var elm$json$Json$Decode$field = _Json_decodeField;
 var elm$json$Json$Decode$int = _Json_decodeInt;
 var elm$json$Json$Decode$map = _Json_map1;
@@ -6392,7 +6392,7 @@ var author$project$Discussion$httpErrorToString = function (error) {
 		case 1:
 			return 'Timeout';
 		case 2:
-			return 'Network error';
+			return 'Network xerror';
 		case 3:
 			var status = error.a;
 			return 'Bad status' + elm$core$String$fromInt(status);
