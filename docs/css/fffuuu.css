@@ -19,7 +19,7 @@ body {
 }
 
 blockquote {
-  border-left: 0.3rem solid #a60800;
+  border-left: 0.3rem solid #860400;
   margin-left: 0;
   margin-right: 0;
   padding: 1rem 1.5rem;
@@ -189,7 +189,7 @@ textarea,
 select {
   appearance: none;
   background-color: transparent;
-  border: 0.1rem solid #a60800;
+  border: 0.1rem solid #860400;
   border-radius: 0.4rem;
   box-shadow: none;
   box-sizing: inherit;
@@ -559,5 +559,19 @@ input {
 }
 
 div.message {
-  color: #a61300;
+  color: #860400;
+  font-size: 1.5rem;
+}
+
+span.username {
+  font-weight: bold;
+  font-color: black;
+}
+
+span.timestamp {
+  position: relative;
+  z-index: 100;
+  float: right;
+  margin: 0 0 0.5em 0.5em;
+  white-space: nowrap;
 }

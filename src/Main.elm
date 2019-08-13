@@ -405,13 +405,21 @@ view model =
                 ++ zeroPad2 (Time.toSecond zone time)
 
         viewMessage message =
+            let
+                username =
+                    if String.isEmpty message.username then
+                        "Anonymous"
+
+                    else
+                        message.username
+            in
             div [ A.class "message" ]
-                [ b [] [ text message.username ]
+                [ span [A.class "username"] [ text username ]
                 , text " "
-                , i [] [ text (formatTime model.zone message.timestamp) ]
+                , span [A.class "topic"] [ text message.topic ]
                 , text " "
-                , b [] [ text message.topic ]
-                , p [] [ text message.message ]
+                , span [A.class "timestamp"] [ text (formatTime model.zone message.timestamp) ]
+                , p [A.class "message"] [ text message.message ]
                 ]
 
         container html =
@@ -441,7 +449,7 @@ view model =
                 , div [ A.class "column", Html.Events.onClick ClickRageGuy ] [ rageGuyView ]
                 ]
             , hr [] []
-            , div [] (List.intersperse (hr [] []) <| List.map viewMessage model.discussion)
+            , div [] (List.map viewMessage model.discussion)
             ]
         ]
 
