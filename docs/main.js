@@ -7619,6 +7619,14 @@ var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 var elm$html$Html$div = _VirtualDom_node('div');
 var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
+var elm$html$Html$Attributes$stringProperty = F2(
+	function (key, string) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			elm$json$Json$Encode$string(string));
+	});
+var elm$html$Html$Attributes$class = elm$html$Html$Attributes$stringProperty('className');
 var elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var elm$html$Html$Attributes$style = elm$virtual_dom$VirtualDom$style;
 var elm$html$Html$Attributes$width = function (n) {
@@ -7652,8 +7660,7 @@ var author$project$RageGuy$view = function (model) {
 				elm$html$Html$div,
 				_List_fromArray(
 					[
-						A2(elm$html$Html$Attributes$style, 'z-index', '100'),
-						A2(elm$html$Html$Attributes$style, 'position', 'absolute'),
+						elm$html$Html$Attributes$class('rageLetter'),
 						A2(
 						elm$html$Html$Attributes$style,
 						'left',
@@ -7661,10 +7668,7 @@ var author$project$RageGuy$view = function (model) {
 						A2(
 						elm$html$Html$Attributes$style,
 						'top',
-						elm$core$String$fromInt(yPosition) + 'px'),
-						A2(elm$html$Html$Attributes$style, 'color', '#FF0000'),
-						A2(elm$html$Html$Attributes$style, 'font-weight', 'bold'),
-						A2(elm$html$Html$Attributes$style, 'font-size', '30px')
+						elm$core$String$fromInt(yPosition) + 'px')
 					]),
 				_List_fromArray(
 					[
@@ -7698,10 +7702,7 @@ var author$project$RageGuy$view = function (model) {
 		return A2(
 			elm$core$List$map,
 			function (rowIndex) {
-				var rowTemplate = (_Utils_cmp(rowIndex, numberOfFFFRows) < 0) ? _List_fromArray(
-					['F', 'F', 'F', 'F', 'F', 'F', 'F']) : (_Utils_eq(rowIndex, numberOfFFFRows) ? _List_fromArray(
-					['F', 'F', 'F', 'U', 'U', 'U', 'U']) : _List_fromArray(
-					['U', 'U', 'U', 'U', 'U', 'U', 'U']));
+				var rowTemplate = (_Utils_cmp(rowIndex, numberOfFFFRows) < 0) ? A2(elm$core$String$split, '', 'FFFFFFF') : (_Utils_eq(rowIndex, numberOfFFFRows) ? A2(elm$core$String$split, '', 'FFFUUUU') : A2(elm$core$String$split, '', 'UUUUUUU'));
 				var rowLength = 7;
 				var chars = A2(elm$core$Basics$max, 0, limit - (rowIndex * rowLength));
 				return A2(elm$core$List$take, chars, rowTemplate);
@@ -7714,7 +7715,12 @@ var author$project$RageGuy$view = function (model) {
 				fffuuuuTextCut(model.thisMoodClock));
 		} else {
 			if (model.targetAnger <= 0.0) {
-				return _List_Nil;
+				return textDivs(
+					A2(
+						elm$core$List$map,
+						elm$core$String$split(''),
+						_List_fromArray(
+							['W rite', ' and', 'click', '  me'])));
 			} else {
 				var digitToString = function (digit) {
 					return elm$core$String$fromChar(
@@ -7818,14 +7824,6 @@ var elm$html$Html$p = _VirtualDom_node('p');
 var elm$html$Html$section = _VirtualDom_node('section');
 var elm$html$Html$span = _VirtualDom_node('span');
 var elm$html$Html$textarea = _VirtualDom_node('textarea');
-var elm$html$Html$Attributes$stringProperty = F2(
-	function (key, string) {
-		return A2(
-			_VirtualDom_property,
-			key,
-			elm$json$Json$Encode$string(string));
-	});
-var elm$html$Html$Attributes$class = elm$html$Html$Attributes$stringProperty('className');
 var elm$html$Html$Attributes$placeholder = elm$html$Html$Attributes$stringProperty('placeholder');
 var elm$html$Html$Attributes$type_ = elm$html$Html$Attributes$stringProperty('type');
 var elm$html$Html$Attributes$value = elm$html$Html$Attributes$stringProperty('value');

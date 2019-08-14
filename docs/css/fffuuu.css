@@ -562,6 +562,20 @@ input {
   color: #a61300;
 }
 
+div.rageLetter {
+  z-index: 100;
+  position: absolute;
+  color: #ff5900;
+  font-weight: bold;
+  font-size: 30px;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
 div.message {
   color: #860400;
   font-size: 1.5rem;

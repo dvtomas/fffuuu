@@ -406,13 +406,13 @@ view model =
                         {- Ugly, but I'm too sleeepy to do it better -}
                         rowTemplate =
                             if rowIndex < numberOfFFFRows then
-                                [ "F", "F", "F", "F", "F", "F", "F" ]
+                                String.split "" "FFFFFFF"
 
                             else if rowIndex == numberOfFFFRows then
-                                [ "F", "F", "F", "U", "U", "U", "U" ]
+                                String.split "" "FFFUUUU"
 
                             else
-                                [ "U", "U", "U", "U", "U", "U", "U" ]
+                                String.split "" "UUUUUUU"
 
                         chars =
                             Basics.max 0 (limit - (rowIndex * rowLength))
@@ -436,13 +436,9 @@ view model =
                     yIndex * 30 + 15 + randomShift ((xIndex * 7) + (yIndex * 5))
             in
             div
-                [ A.style "z-index" "100"
-                , A.style "position" "absolute"
+                [ A.class "rageLetter"
                 , A.style "left" (String.fromInt xPosition ++ "px")
                 , A.style "top" (String.fromInt yPosition ++ "px")
-                , A.style "color" "#FF0000"
-                , A.style "font-weight" "bold"
-                , A.style "font-size" "30px"
                 ]
                 [ text letter ]
 
@@ -457,7 +453,7 @@ view model =
                 textDivs (fffuuuuTextCut model.thisMoodClock)
 
             else if model.targetAnger <= 0.0 then
-                []
+                textDivs (List.map (String.split "") ["W rite", " and", "click", "  me"])
 
             else
                 let
