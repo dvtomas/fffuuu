@@ -7221,10 +7221,6 @@ var author$project$SwearWords$severityOfMaybeSwearWordAdded = F2(
 			elm$core$String$length(oldString),
 			elm$core$String$length(newString)) < 0) && (!_Utils_eq(oldLastWord, newLastWord))) ? severity : 0.0;
 	});
-var elm$core$Basics$min = F2(
-	function (x, y) {
-		return (_Utils_cmp(x, y) < 0) ? x : y;
-	});
 var author$project$Main$updatedModelRage = F5(
 	function (model, maxLength, stringGetter, stringSetter, newString) {
 		if (_Utils_cmp(
@@ -7235,7 +7231,7 @@ var author$project$Main$updatedModelRage = F5(
 			var charsAdded = elm$core$String$length(newString) - elm$core$String$length(oldString);
 			var severityOfMaybeCharsAdded = A2(elm$core$Basics$max, 0, 2.0e-3 * charsAdded);
 			var addedSeverity = severityOfMaybeSwearWordAdded + severityOfMaybeCharsAdded;
-			var angerFlash = A2(elm$core$Basics$min, 4.0, ((5 * addedSeverity) + model.angerFlash) + (0.15 * charsAdded));
+			var angerFlash = ((5 * addedSeverity) + model.angerFlash) + (0.15 * charsAdded);
 			var rageGuy = A2(
 				author$project$RageGuy$update,
 				author$project$RageGuy$RageUp(addedSeverity),
@@ -7250,6 +7246,10 @@ var author$project$Main$updatedModelRage = F5(
 		}
 	});
 var author$project$RageGuy$Tick = {$: 'Tick'};
+var elm$core$Basics$min = F2(
+	function (x, y) {
+		return (_Utils_cmp(x, y) < 0) ? x : y;
+	});
 var elm$core$Platform$Cmd$map = _Platform_map;
 var elm$core$Platform$Cmd$batch = _Platform_batch;
 var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
@@ -7268,7 +7268,10 @@ var author$project$Main$update = F2(
 						elm$time$Time$posixToMillis(time) + (seconds * 1000));
 				};
 				var rageGuy = A2(author$project$RageGuy$update, author$project$RageGuy$Tick, model.rageGuy);
-				var angerFlash = A2(elm$core$Basics$max, 0.0, model.angerFlash - 0.13);
+				var angerFlash = A2(
+					elm$core$Basics$min,
+					4.0,
+					A2(elm$core$Basics$max, 0.0, model.angerFlash - 0.13));
 				var newModel = _Utils_update(
 					model,
 					{angerFlash: angerFlash, rageGuy: rageGuy, time: time});
