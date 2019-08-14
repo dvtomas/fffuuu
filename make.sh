@@ -6,7 +6,7 @@
 # https://guide.elm-lang.org/webapps/
 # https://guide.elm-lang.org/interop/
 echo "* Running elm make"
-elm make --optimize src/Main.elm --output=docs/main.js
+elm make src/Main.elm --output=docs/main.js
 
 echo "* Running sass to build milligram.css"
 SASSAPP=./dart-sass/sass

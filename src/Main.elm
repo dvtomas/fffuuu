@@ -193,7 +193,7 @@ update msg model =
                         in
                         ( newModel, Cmd.map DiscussionMsg (Discussion.postMessageCmd newMessage) )
 
-                    else if rageGuy.isRaging then
+                    else if rageGuy.isRaging && rageGuy.thisMoodClock > 50 then
                         -- Cool down
                         ( { model | angerFlash = 5.0, rageGuy = { rageGuy | targetAnger = 0.0, isRaging = False, mood = RageGuy.Neutral } }
                         , Cmd.none

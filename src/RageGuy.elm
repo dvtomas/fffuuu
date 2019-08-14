@@ -67,7 +67,7 @@ nextMood mood =
 
 
 type alias Model =
-    { clock : Int
+    { thisMoodClock : Int
     , mood : Mood
     , isRaging : Bool
     , isMoodInTransition : Bool
@@ -99,7 +99,7 @@ angerToMood anger isRaging =
 
 initialModel : Model
 initialModel =
-    { clock = 0
+    { thisMoodClock = 0
     , mood = Neutral
     , isRaging = False
     , isMoodInTransition = False
@@ -295,12 +295,12 @@ framesDefinition mood =
 
 
 relativeFrameForStaticMood : Int -> Mood -> Int
-relativeFrameForStaticMood clock mood =
+relativeFrameForStaticMood thisMoodClock mood =
     let
         cycle =
             Array.fromList (framesDefinition mood).staticFrames
     in
-    Maybe.withDefault 0 (Array.get (modBy (Array.length cycle) clock) cycle)
+    Maybe.withDefault 0 (Array.get (modBy (Array.length cycle) thisMoodClock) cycle)
 
 
 maybeMoodTransitionFrameAfter : Int -> Mood -> Maybe Int
@@ -330,7 +330,7 @@ update msg model =
 
                                 Nothing ->
                                     { model
-                                        | clock = 0
+                                        | thisMoodClock = 0
                                         , lastRelativeFrame = 0
                                         , mood = nextMood model.mood
                                         , isMoodInTransition = False
@@ -342,8 +342,8 @@ update msg model =
 
                     else if model.mood == targetMood then
                         { model
-                            | lastRelativeFrame = relativeFrameForStaticMood model.clock model.mood
-                            , clock = model.clock + 1
+                            | lastRelativeFrame = relativeFrameForStaticMood model.thisMoodClock model.mood
+                            , thisMoodClock = model.thisMoodClock + 1
                         }
 
                     else
@@ -425,7 +425,7 @@ view model =
             Array.fromList [ -1, 2, 3, -2, 0, 2, -3, 1, 2, 1, 2, 1, 0, -1, -2, 2, 1, 0, 1, -3, 1, -2 ]
 
         randomShift n =
-            Maybe.withDefault 0 (Array.get (modBy (Array.length randomShifts) (n + model.clock)) randomShifts)
+            Maybe.withDefault 0 (Array.get (modBy (Array.length randomShifts) (n + model.thisMoodClock)) randomShifts)
 
         letterDiv xIndex yIndex letter =
             let
@@ -454,7 +454,7 @@ view model =
 
         fffuuuTextDivs =
             if model.mood == FFFUUU then
-                textDivs (fffuuuuTextCut (model.clock * 3))
+                textDivs (fffuuuuTextCut (model.thisMoodClock ))
 
             else if model.targetAnger <= 0.0 then
                 []
