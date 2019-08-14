@@ -182,8 +182,16 @@ update msg model =
 
                             newMessage =
                                 Discussion.Message user model.time model.topic model.message
+
+                            newModel =
+                                { model
+                                    | topic = ""
+                                    , message = ""
+                                    , rageGuy = { rageGuy | isRaging = True }
+                                }
+
                         in
-                        ( model, Cmd.map DiscussionMsg (Discussion.postMessageCmd newMessage) )
+                        ( newModel, Cmd.map DiscussionMsg (Discussion.postMessageCmd newMessage) )
 
                     else if rageGuy.isRaging then
                         -- Cool down
