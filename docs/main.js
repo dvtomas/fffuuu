@@ -4564,7 +4564,7 @@ var author$project$Main$AdjustTimeZone = function (a) {
 };
 var author$project$RageGuy$Neutral = 0;
 var elm$core$Basics$False = 1;
-var author$project$RageGuy$initialModel = {k: 0, I: false, Q: false, t: 0, aY: 0, M: 0};
+var author$project$RageGuy$initialModel = {n: 0, I: false, Q: false, t: 0, aY: 0, M: 0};
 var elm$core$Basics$EQ = 1;
 var elm$core$Basics$LT = 0;
 var elm$core$Elm$JsArray$foldr = _JsArray_foldr;
@@ -4656,7 +4656,7 @@ var elm$time$Time$Zone = F2(
 	});
 var elm$time$Time$utc = A2(elm$time$Time$Zone, 0, _List_Nil);
 var author$project$Main$initialModel = {
-	g: 0.0,
+	f: 0.0,
 	i: _List_Nil,
 	ap: '',
 	R: elm$time$Time$millisToPosix(0),
@@ -6846,7 +6846,7 @@ var author$project$RageGuy$update = F2(
 							return _Utils_update(
 								model,
 								{
-									k: 0,
+									n: 0,
 									I: false,
 									t: 0,
 									aY: author$project$RageGuy$nextMood(model.aY)
@@ -6860,8 +6860,8 @@ var author$project$RageGuy$update = F2(
 						return _Utils_update(
 							model,
 							{
-								k: model.k + 1,
-								t: A2(author$project$RageGuy$relativeFrameForStaticMood, model.k, model.aY)
+								n: model.n + 1,
+								t: A2(author$project$RageGuy$relativeFrameForStaticMood, model.n, model.aY)
 							});
 					} else {
 						return _Utils_update(
@@ -7229,14 +7229,14 @@ var author$project$Main$updatedModelRage = F5(
 			var charsAdded = elm$core$String$length(newString) - elm$core$String$length(oldString);
 			var severityOfMaybeCharsAdded = A2(elm$core$Basics$max, 0, 2.0e-3 * charsAdded);
 			var addedSeverity = severityOfMaybeSwearWordAdded + severityOfMaybeCharsAdded;
-			var angerFlash = A2(elm$core$Basics$min, 4.0, ((5 * addedSeverity) + model.g) + (0.15 * charsAdded));
+			var angerFlash = A2(elm$core$Basics$min, 4.0, ((5 * addedSeverity) + model.f) + (0.15 * charsAdded));
 			var rageGuy = A2(
 				author$project$RageGuy$update,
 				author$project$RageGuy$RageUp(addedSeverity),
 				model.e);
 			var model_ = _Utils_update(
 				model,
-				{g: angerFlash, e: rageGuy});
+				{f: angerFlash, e: rageGuy});
 			var model__ = A2(stringSetter, newString, model_);
 			return model__;
 		} else {
@@ -7262,10 +7262,10 @@ var author$project$Main$update = F2(
 						elm$time$Time$posixToMillis(time) + (seconds * 1000));
 				};
 				var rageGuy = A2(author$project$RageGuy$update, author$project$RageGuy$Tick, model.e);
-				var angerFlash = A2(elm$core$Basics$max, 0.0, model.g - 0.13);
+				var angerFlash = A2(elm$core$Basics$max, 0.0, model.f - 0.13);
 				var newModel = _Utils_update(
 					model,
-					{g: angerFlash, e: rageGuy, w: time});
+					{f: angerFlash, e: rageGuy, w: time});
 				return (_Utils_cmp(
 					elm$time$Time$posixToMillis(time),
 					elm$time$Time$posixToMillis(model.R)) > 0) ? _Utils_Tuple2(
@@ -7294,7 +7294,7 @@ var author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{g: (model.g + angerDiff) * 10.0, e: newRageGuy}),
+						{f: (model.f + angerDiff) * 10.0, e: newRageGuy}),
 					elm$core$Platform$Cmd$none);
 			case 3:
 				var rageGuy = model.e;
@@ -7314,7 +7314,7 @@ var author$project$Main$update = F2(
 								_Utils_update(
 									model,
 									{
-										g: 5.0,
+										f: 5.0,
 										e: _Utils_update(
 											rageGuy,
 											{Q: false, aY: 0, M: 0.0})
@@ -7325,7 +7325,7 @@ var author$project$Main$update = F2(
 								_Utils_update(
 									model,
 									{
-										g: model.g + 1.0,
+										f: model.f + 1.0,
 										e: A2(
 											author$project$RageGuy$update,
 											author$project$RageGuy$RageUp(5.0e-2),
@@ -7460,6 +7460,7 @@ var author$project$RageGuy$startFrame = function (mood) {
 var elm$core$Basics$negate = function (n) {
 	return -n;
 };
+var elm$core$Char$fromCode = _Char_fromCode;
 var elm$core$List$takeReverse = F3(
 	function (n, list, kept) {
 		takeReverse:
@@ -7624,7 +7625,7 @@ var author$project$RageGuy$view = function (model) {
 				A2(
 					elm$core$Basics$modBy,
 					elm$core$Array$length(randomShifts),
-					n + model.k),
+					n + model.n),
 				randomShifts));
 	};
 	var numberOfFFFRows = 5;
@@ -7692,8 +7693,57 @@ var author$project$RageGuy$view = function (model) {
 			},
 			A2(elm$core$List$range, 0, numberOfFFFRows * 2));
 	};
-	var fffuuuTextDivs = (model.aY === 5) ? textDivs(
-		fffuuuuTextCut(model.k * 3)) : _List_Nil;
+	var fffuuuTextDivs = function () {
+		if (model.aY === 5) {
+			return textDivs(
+				fffuuuuTextCut(model.n * 3));
+		} else {
+			if (model.M <= 0.0) {
+				return _List_Nil;
+			} else {
+				var digitToString = function (digit) {
+					return elm$core$String$fromChar(
+						elm$core$Char$fromCode(
+							elm$core$Char$toCode('0') + digit));
+				};
+				var anger = model.M * 100.0;
+				var nthDigitToString = function (order) {
+					return digitToString(
+						A2(
+							elm$core$Basics$modBy,
+							10,
+							elm$core$Basics$floor(anger / order)));
+				};
+				var textCut = (anger < 10.0) ? _List_fromArray(
+					[
+						nthDigitToString(1)
+					]) : ((anger < 100.0) ? _List_fromArray(
+					[
+						nthDigitToString(10),
+						nthDigitToString(1)
+					]) : ((anger < 1000.0) ? _List_fromArray(
+					[
+						nthDigitToString(100),
+						nthDigitToString(10),
+						nthDigitToString(1)
+					]) : _List_fromArray(
+					[
+						nthDigitToString(1000),
+						nthDigitToString(100),
+						nthDigitToString(10),
+						nthDigitToString(1)
+					])));
+				return textDivs(
+					_List_fromArray(
+						[
+							_Utils_ap(
+							textCut,
+							_List_fromArray(
+								['%']))
+						]));
+			}
+		}
+	}();
 	return A2(
 		elm$html$Html$div,
 		_List_fromArray(
@@ -7712,7 +7762,6 @@ var author$project$RageGuy$view = function (model) {
 			]),
 		fffuuuTextDivs);
 };
-var elm$core$Char$fromCode = _Char_fromCode;
 var author$project$Utils$toRadix = function (n) {
 	var getChr = function (c) {
 		return (c < 10) ? elm$core$String$fromInt(c) : elm$core$String$fromChar(
@@ -8116,8 +8165,7 @@ var author$project$Main$view = function (model) {
 					]),
 				_List_fromArray(
 					[
-						elm$html$Html$text('Frustrated? Hatin\' it? Roaring Rage?'),
-						A2(elm$html$Html$hr, _List_Nil, _List_Nil)
+						elm$html$Html$text('Frustrated? Hatin\' it? Roaring Rage?')
 					]))
 			]));
 	var container = function (html) {
@@ -8148,7 +8196,7 @@ var author$project$Main$view = function (model) {
 			function (a, b, c, d, p) {
 				return (p < 0.0) ? a : ((p < 1.0) ? A3(interpolate, a, b, p) : ((p < 2.0) ? A3(interpolate, b, c, p - 1.0) : ((p < 3.0) ? A3(interpolate, c, d, p - 2.0) : d)));
 			});
-		var anger = (model.e.M < 1.0) ? model.g : ((!model.e.Q) ? (((1.5 + elm$core$Basics$sin(now / 500.0)) + (0.5 * elm$core$Basics$sin(0.3 + (now / 400.0)))) + (0.4 * elm$core$Basics$cos(0.8 + (now / 300.0)))) : (((1.0 + elm$core$Basics$sin(now / 500.0)) + (0.5 * elm$core$Basics$sin(0.3 + (now / 100.0)))) + (0.4 * elm$core$Basics$cos(0.8 + (now / 200.0)))));
+		var anger = (model.e.M < 1.0) ? model.f : ((!model.e.Q) ? ((((1.5 + elm$core$Basics$sin(now / 500.0)) + (0.5 * elm$core$Basics$sin(0.3 + (now / 400.0)))) + (0.4 * elm$core$Basics$cos(0.8 + (now / 300.0)))) + model.f) : (((1.0 + elm$core$Basics$sin(now / 500.0)) + (0.5 * elm$core$Basics$sin(0.3 + (now / 100.0)))) + (0.4 * elm$core$Basics$cos(0.8 + (now / 200.0)))));
 		var angerColorComponent = F4(
 			function (a, b, c, d) {
 				return A5(interpolate3, a, b, c, d, anger);

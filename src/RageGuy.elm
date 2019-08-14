@@ -9,7 +9,6 @@ module RageGuy exposing
     , nextMood
     , rageGuyImageWidth
     , relativeFrameForStaticMood
-    , shouldSendMessage
     , update
     , view
     )
@@ -18,7 +17,6 @@ import Array
 import Dict
 import Html exposing (..)
 import Html.Attributes as A
-import Html.Events exposing (onClick)
 
 
 type alias Anger =
@@ -32,10 +30,6 @@ type Mood
     | Drooling
     | VergeOfExplosion
     | FFFUUU
-
-
-shouldSendMessage model =
-    model.mood == FFFUUU && model.clock == 1
 
 
 isMoodBefore : Mood -> Mood -> Bool
@@ -462,8 +456,34 @@ view model =
             if model.mood == FFFUUU then
                 textDivs (fffuuuuTextCut (model.clock * 3))
 
-            else
+            else if model.targetAnger <= 0.0 then
                 []
+
+            else
+                let
+                    anger =
+                        model.targetAnger * 100.0
+
+                    digitToString digit =
+                        Char.toCode '0' + digit |> Char.fromCode |> String.fromChar
+
+                    nthDigitToString order =
+                        floor (anger / order) |> modBy 10 |> digitToString
+
+                    textCut =
+                        if anger < 10.0 then
+                            [ nthDigitToString 1 ]
+
+                        else if anger < 100.0 then
+                            [ nthDigitToString 10, nthDigitToString 1 ]
+
+                        else if anger < 1000.0 then
+                            [ nthDigitToString 100, nthDigitToString 10, nthDigitToString 1 ]
+
+                        else
+                            [ nthDigitToString 1000, nthDigitToString 100, nthDigitToString 10, nthDigitToString 1 ]
+                in
+                textDivs [ textCut ++ [ "%" ] ]
     in
     div
         [ A.style "position" "relative"

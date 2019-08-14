@@ -548,8 +548,12 @@ h1 {
   color: #a61300;
 }
 
+hr {
+  border-color: #f37893;
+}
+
 textarea {
-  height: 300px;
+  height: 250px;
   color: #a61300;
 }
 

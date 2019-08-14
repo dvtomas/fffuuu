@@ -280,6 +280,7 @@ view model =
                         (1.5 + sin (now / 500.0))
                             + (0.5 * sin (0.3 + now / 400.0))
                             + (0.4 * cos (0.8 + now / 300.0))
+                            + model.angerFlash
 
                     else
                         (1.0 + sin (now / 500.0))
@@ -300,7 +301,7 @@ view model =
             header [ A.class "bordered" ]
                 [ h1
                     [ A.class "top-label" ]
-                    [ text "Frustrated? Hatin' it? Roaring Rage?", hr [] [] ]
+                    [ text "Frustrated? Hatin' it? Roaring Rage?" ]
                 ]
 
         usernameInput =
