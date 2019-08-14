@@ -519,11 +519,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.ac.K === region.ai.K)
+	if (region.ac.J === region.ai.J)
 	{
-		return 'on line ' + region.ac.K;
+		return 'on line ' + region.ac.J;
 	}
-	return 'on lines ' + region.ac.K + ' through ' + region.ai.K;
+	return 'on lines ' + region.ac.J + ' through ' + region.ai.J;
 }
 
 
@@ -4177,7 +4177,7 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 		impl.a7,
 		impl.a5,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.L && impl.L(sendToApp)
+			var divertHrefToApp = impl.K && impl.K(sendToApp)
 			var view = impl.a8;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
@@ -4247,7 +4247,7 @@ function _Browser_application(impl)
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		L: function(sendToApp)
+		K: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4564,7 +4564,7 @@ var author$project$Main$AdjustTimeZone = function (a) {
 };
 var author$project$RageGuy$Neutral = 0;
 var elm$core$Basics$False = 1;
-var author$project$RageGuy$initialModel = {k: 0, I: false, J: false, t: 0, aY: 0, N: 0};
+var author$project$RageGuy$initialModel = {k: 0, I: false, Q: false, t: 0, aY: 0, M: 0};
 var elm$core$Basics$EQ = 1;
 var elm$core$Basics$LT = 0;
 var elm$core$Elm$JsArray$foldr = _JsArray_foldr;
@@ -4657,7 +4657,7 @@ var elm$time$Time$Zone = F2(
 var elm$time$Time$utc = A2(elm$time$Time$Zone, 0, _List_Nil);
 var author$project$Main$initialModel = {
 	g: 0.0,
-	h: _List_Nil,
+	i: _List_Nil,
 	ap: '',
 	R: elm$time$Time$millisToPosix(0),
 	e: author$project$RageGuy$initialModel,
@@ -6832,7 +6832,7 @@ var author$project$RageGuy$relativeFrameForStaticMood = F2(
 var author$project$RageGuy$update = F2(
 	function (msg, model) {
 		if (!msg.$) {
-			var targetMood = A2(author$project$RageGuy$angerToMood, model.N, model.J);
+			var targetMood = A2(author$project$RageGuy$angerToMood, model.M, model.Q);
 			var newModel = function () {
 				if (model.I) {
 					if (A2(author$project$RageGuy$isMoodBefore, model.aY, targetMood)) {
@@ -6875,7 +6875,7 @@ var author$project$RageGuy$update = F2(
 			var amount = msg.a;
 			return _Utils_update(
 				model,
-				{N: model.N + amount});
+				{M: model.M + amount});
 		}
 	});
 var author$project$SwearWords$translationList = _List_fromArray(
@@ -7229,7 +7229,7 @@ var author$project$Main$updatedModelRage = F5(
 			var charsAdded = elm$core$String$length(newString) - elm$core$String$length(oldString);
 			var severityOfMaybeCharsAdded = A2(elm$core$Basics$max, 0, 2.0e-3 * charsAdded);
 			var addedSeverity = severityOfMaybeSwearWordAdded + severityOfMaybeCharsAdded;
-			var angerFlash = A2(elm$core$Basics$min, 4.0, ((5 * addedSeverity) + model.g) + (0.2 * charsAdded));
+			var angerFlash = A2(elm$core$Basics$min, 4.0, ((5 * addedSeverity) + model.g) + (0.15 * charsAdded));
 			var rageGuy = A2(
 				author$project$RageGuy$update,
 				author$project$RageGuy$RageUp(addedSeverity),
@@ -7262,7 +7262,7 @@ var author$project$Main$update = F2(
 						elm$time$Time$posixToMillis(time) + (seconds * 1000));
 				};
 				var rageGuy = A2(author$project$RageGuy$update, author$project$RageGuy$Tick, model.e);
-				var angerFlash = A2(elm$core$Basics$max, 0.0, model.g - 0.2);
+				var angerFlash = A2(elm$core$Basics$max, 0.0, model.g - 0.13);
 				var newModel = _Utils_update(
 					model,
 					{g: angerFlash, e: rageGuy, w: time});
@@ -7288,9 +7288,9 @@ var author$project$Main$update = F2(
 					elm$core$Platform$Cmd$none);
 			case 1:
 				var rageGuyMsg = msg.a;
-				var oldAnger = model.e.N;
+				var oldAnger = model.e.M;
 				var newRageGuy = A2(author$project$RageGuy$update, rageGuyMsg, model.e);
-				var angerDiff = newRageGuy.N - oldAnger;
+				var angerDiff = newRageGuy.M - oldAnger;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -7299,28 +7299,17 @@ var author$project$Main$update = F2(
 			case 3:
 				var rageGuy = model.e;
 				var result = function () {
-					if ((rageGuy.N >= 1.0) && ((!rageGuy.J) && (!elm$core$String$isEmpty(model.ap)))) {
+					if ((rageGuy.M >= 1.0) && ((!rageGuy.Q) && (!elm$core$String$isEmpty(model.ap)))) {
 						var user = model.aN;
 						var newMessage = A4(author$project$Discussion$Message, user, model.w, model.aK, model.ap);
-						var newDiscussion = A2(elm$core$List$cons, newMessage, model.h);
-						var newModel = _Utils_update(
-							model,
-							{
-								h: newDiscussion,
-								ap: '',
-								e: _Utils_update(
-									rageGuy,
-									{J: true}),
-								aK: ''
-							});
 						return _Utils_Tuple2(
-							newModel,
+							model,
 							A2(
 								elm$core$Platform$Cmd$map,
 								author$project$Main$DiscussionMsg,
 								author$project$Discussion$postMessageCmd(newMessage)));
 					} else {
-						if (rageGuy.J) {
+						if (rageGuy.Q) {
 							return _Utils_Tuple2(
 								_Utils_update(
 									model,
@@ -7328,7 +7317,7 @@ var author$project$Main$update = F2(
 										g: 5.0,
 										e: _Utils_update(
 											rageGuy,
-											{J: false, aY: 0, N: 0.0})
+											{Q: false, aY: 0, M: 0.0})
 									}),
 								elm$core$Platform$Cmd$none);
 						} else {
@@ -7398,7 +7387,7 @@ var author$project$Main$update = F2(
 							_Utils_update(
 								model,
 								{
-									h: A2(elm$core$List$cons, message, model.h)
+									i: A2(elm$core$List$cons, message, model.i)
 								}),
 							elm$core$Platform$Cmd$none);
 					} else {
@@ -7407,10 +7396,10 @@ var author$project$Main$update = F2(
 							_Utils_update(
 								model,
 								{
-									h: A2(
+									i: A2(
 										elm$core$List$cons,
 										A3(author$project$Main$restDbError, 'Error while posting message', error, model.w),
-										model.h)
+										model.i)
 								}),
 							elm$core$Platform$Cmd$none);
 					}
@@ -7420,7 +7409,7 @@ var author$project$Main$update = F2(
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
-								{h: messages}),
+								{i: messages}),
 							elm$core$Platform$Cmd$none);
 					} else {
 						var error = msg.a.a.a;
@@ -7428,10 +7417,10 @@ var author$project$Main$update = F2(
 							_Utils_update(
 								model,
 								{
-									h: A2(
+									i: A2(
 										elm$core$List$cons,
 										A3(author$project$Main$restDbError, 'Error while retrieving messages list', error, model.w),
-										model.h)
+										model.i)
 								}),
 							elm$core$Platform$Cmd$none);
 					}
@@ -8159,7 +8148,7 @@ var author$project$Main$view = function (model) {
 			function (a, b, c, d, p) {
 				return (p < 0.0) ? a : ((p < 1.0) ? A3(interpolate, a, b, p) : ((p < 2.0) ? A3(interpolate, b, c, p - 1.0) : ((p < 3.0) ? A3(interpolate, c, d, p - 2.0) : d)));
 			});
-		var anger = (model.e.N < 1.0) ? model.g : ((!model.e.J) ? (((1.5 + elm$core$Basics$sin(now / 500.0)) + (0.5 * elm$core$Basics$sin(0.3 + (now / 400.0)))) + (0.4 * elm$core$Basics$cos(0.8 + (now / 300.0)))) : (((1.0 + elm$core$Basics$sin(now / 500.0)) + (0.5 * elm$core$Basics$sin(0.3 + (now / 100.0)))) + (0.4 * elm$core$Basics$cos(0.8 + (now / 200.0)))));
+		var anger = (model.e.M < 1.0) ? model.g : ((!model.e.Q) ? (((1.5 + elm$core$Basics$sin(now / 500.0)) + (0.5 * elm$core$Basics$sin(0.3 + (now / 400.0)))) + (0.4 * elm$core$Basics$cos(0.8 + (now / 300.0)))) : (((1.0 + elm$core$Basics$sin(now / 500.0)) + (0.5 * elm$core$Basics$sin(0.3 + (now / 100.0)))) + (0.4 * elm$core$Basics$cos(0.8 + (now / 200.0)))));
 		var angerColorComponent = F4(
 			function (a, b, c, d) {
 				return A5(interpolate3, a, b, c, d, anger);
@@ -8211,7 +8200,7 @@ var author$project$Main$view = function (model) {
 						A2(
 						elm$html$Html$div,
 						_List_Nil,
-						A2(elm$core$List$map, viewMessage, model.h))
+						A2(elm$core$List$map, viewMessage, model.i))
 					]))
 			]));
 };

@@ -87,15 +87,17 @@ updatedModelRage model maxLength stringGetter stringSetter newString =
             severityOfMaybeSwearWordAdded =
                 SwearWords.severityOfMaybeSwearWordAdded oldString newString
 
-            charsAdded = toFloat (String.length newString - String.length oldString)
+            charsAdded =
+                toFloat (String.length newString - String.length oldString)
 
-            severityOfMaybeCharsAdded = max 0 (0.002 * charsAdded)
+            severityOfMaybeCharsAdded =
+                max 0 (0.002 * charsAdded)
 
             addedSeverity =
                 severityOfMaybeSwearWordAdded + severityOfMaybeCharsAdded
 
             angerFlash =
-                (5 * addedSeverity + model.angerFlash) + 0.2 * charsAdded  |> Basics.min 4.0
+                (5 * addedSeverity + model.angerFlash) + 0.15 * charsAdded |> Basics.min 4.0
 
             rageGuy =
                 RageGuy.update (RageGuy.RageUp addedSeverity) model.rageGuy
@@ -132,7 +134,7 @@ update msg model =
                     RageGuy.update RageGuy.Tick model.rageGuy
 
                 angerFlash =
-                    model.angerFlash - 0.2 |> Basics.max 0.0
+                    model.angerFlash - 0.13 |> Basics.max 0.0
 
                 newModel =
                     { model | time = time, rageGuy = rageGuy, angerFlash = angerFlash }
@@ -180,19 +182,8 @@ update msg model =
 
                             newMessage =
                                 Discussion.Message user model.time model.topic model.message
-
-                            newDiscussion =
-                                newMessage :: model.discussion
-
-                            newModel =
-                                { model
-                                    | topic = ""
-                                    , message = ""
-                                    , discussion = newDiscussion
-                                    , rageGuy = { rageGuy | isRaging = True }
-                                }
                         in
-                        ( newModel, Cmd.map DiscussionMsg (Discussion.postMessageCmd newMessage) )
+                        ( model, Cmd.map DiscussionMsg (Discussion.postMessageCmd newMessage) )
 
                     else if rageGuy.isRaging then
                         -- Cool down
@@ -415,12 +406,12 @@ view model =
                         message.username
             in
             div [ A.class "message" ]
-                [ span [A.class "username"] [ text username ]
+                [ span [ A.class "username" ] [ text username ]
                 , text " "
-                , span [A.class "topic"] [ text message.topic ]
+                , span [ A.class "topic" ] [ text message.topic ]
                 , text " "
-                , span [A.class "timestamp"] [ text (formatTime model.zone message.timestamp) ]
-                , p [A.class "message"] [ text message.message ]
+                , span [ A.class "timestamp" ] [ text (formatTime model.zone message.timestamp) ]
+                , p [ A.class "message" ] [ text message.message ]
                 ]
 
         container html =
