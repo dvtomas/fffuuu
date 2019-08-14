@@ -7313,7 +7313,7 @@ var author$project$Main$update = F2(
 								message: '',
 								rageGuy: _Utils_update(
 									rageGuy,
-									{isRaging: true}),
+									{isRaging: true, thisMoodClock: 0}),
 								topic: ''
 							});
 						var newMessage = A4(author$project$Discussion$Message, user, model.time, model.topic, model.message);

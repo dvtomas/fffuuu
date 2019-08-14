@@ -454,7 +454,7 @@ view model =
 
         fffuuuTextDivs =
             if model.mood == FFFUUU then
-                textDivs (fffuuuuTextCut (model.thisMoodClock ))
+                textDivs (fffuuuuTextCut model.thisMoodClock)
 
             else if model.targetAnger <= 0.0 then
                 []

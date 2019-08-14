@@ -187,9 +187,8 @@ update msg model =
                                 { model
                                     | topic = ""
                                     , message = ""
-                                    , rageGuy = { rageGuy | isRaging = True }
+                                    , rageGuy = { rageGuy | thisMoodClock = 0, isRaging = True }
                                 }
-
                         in
                         ( newModel, Cmd.map DiscussionMsg (Discussion.postMessageCmd newMessage) )
 
